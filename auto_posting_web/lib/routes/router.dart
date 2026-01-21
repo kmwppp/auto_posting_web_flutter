@@ -4,7 +4,7 @@ import '../presentation/view/login/login_page.dart';
 import '../presentation/view/main/main_page.dart';
 
 final goRouter = GoRouter(
-  initialLocation: '/login',
+  initialLocation: '/main',
   routes: [
     GoRoute(path: '/login', builder: (context, state) => LoginPage()),
     GoRoute(path: '/main', builder: (context, state) => MainPage()),

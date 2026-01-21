@@ -24,12 +24,12 @@ class MainPage extends StatelessWidget {
               color: Colors.blueAccent,
               child: Column(children: [Text("포스트 유형 선택 및 내용 입력 섹션")]),
             ),
-            Container(
-              width: double.infinity,
-              height: 200,
-              color: Colors.blueGrey,
-              child: Column(children: [Text("AI 글쓰기 설정 섹션")]),
-            ),
+            // Container(
+            //   width: double.infinity,
+            //   height: 200,
+            //   color: Colors.blueGrey,
+            //   child: Column(children: [Text("AI 글쓰기 설정 섹션")]),
+            // ),
           ],
         ),
       ),
