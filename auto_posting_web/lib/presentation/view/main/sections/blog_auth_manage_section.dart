@@ -10,9 +10,8 @@ class BlogAuthManageSection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(mainViewModelProvider);
-    return Container(
+    return SizedBox(
       width: double.infinity,
-      color: Colors.blueAccent,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(

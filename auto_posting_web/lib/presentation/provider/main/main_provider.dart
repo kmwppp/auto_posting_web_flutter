@@ -23,3 +23,31 @@ final pwControllerProvider = Provider.autoDispose((ref) {
   ref.onDispose(() => controller.dispose());
   return controller;
 });
+
+// 워드 프레스 URL 컨트롤러
+final wordpressURLControllerProvider = Provider.autoDispose((ref) {
+  final controller = TextEditingController();
+  ref.onDispose(() => controller.dispose());
+  return controller;
+});
+
+// 블로그 제목 컨트롤러
+final blogTitleControllerProvider = Provider.autoDispose((ref) {
+  final controller = TextEditingController();
+  ref.onDispose(() => controller.dispose());
+  return controller;
+});
+
+// AI 글쓰기 지침 컨트롤러
+final aiwriteOrderControllerProvider = Provider.autoDispose((ref) {
+  final controller = TextEditingController();
+  ref.onDispose(() => controller.dispose());
+  return controller;
+});
+
+// 발행 주기 컨트롤러
+final postingCycleControllerProvider = Provider.autoDispose((ref) {
+  final controller = TextEditingController();
+  ref.onDispose(() => controller.dispose());
+  return controller;
+});

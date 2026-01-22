@@ -2,6 +2,8 @@ import 'package:auto_posting_web/data/model/main_user_info_model.dart';
 import 'package:auto_posting_web/presentation/viewmodel/main/main_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'main_enums.dart';
+
 class MainViewModel extends Notifier<MainState> {
   @override
   MainState build() {
@@ -49,5 +51,29 @@ class MainViewModel extends Notifier<MainState> {
 
   void changeDistributionType(DistributionType type) {
     state = state.copyWith(distributionType: type);
+  }
+
+  void changePostType(PostType type) {
+    state = state.copyWith(postType: type);
+  }
+
+  void changeCreatePostType(CreatePostType type) {
+    state = state.copyWith(createPostType: type);
+  }
+
+  void changeisQRLinkChange(bool value) {
+    state = state.copyWith(isQRLinkChange: value);
+  }
+
+  void updateAIImgCount(double value) {
+    state = state.copyWith(aiImgCount: value);
+  }
+
+  void updateImageStyle(AIPhotoType type) {
+    state = state.copyWith(selectedImageStyle: type);
+  }
+
+  void changePostingType(PostingType type) {
+    state = state.copyWith(postingType: type);
   }
 }

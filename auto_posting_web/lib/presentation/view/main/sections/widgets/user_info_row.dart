@@ -37,22 +37,22 @@ class UserInfoRow extends ConsumerWidget {
         Row(
           spacing: 10,
           children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Container(
-                width: 100,
-                height: 40,
-                color: Colors.white,
-                alignment: Alignment.center,
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: TextField(
-                  textAlign: TextAlign.center,
-                  decoration: InputDecoration(
-                    isDense: true,
-                    border: InputBorder.none,
-                  ),
-                  style: context.bodyLarge,
+            Container(
+              decoration: BoxDecoration(
+                border: BoxBorder.all(color: Colors.black),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              width: 100,
+              height: 40,
+              alignment: Alignment.center,
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: TextField(
+                textAlign: TextAlign.center,
+                decoration: InputDecoration(
+                  isDense: true,
+                  border: InputBorder.none,
                 ),
+                style: context.bodyLarge,
               ),
             ),
             Text("개", style: context.bodyLarge),
