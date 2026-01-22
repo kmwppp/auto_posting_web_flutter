@@ -1,8 +1,8 @@
 import 'package:auto_posting_web/data/model/main_user_info_model.dart';
-import 'package:auto_posting_web/presentation/viewmodel/main/main_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'main_enums.dart';
+import 'main_state.dart';
 
 class MainViewModel extends Notifier<MainState> {
   @override
@@ -17,7 +17,7 @@ class MainViewModel extends Notifier<MainState> {
       MainUserInfoModel model = MainUserInfoModel(
         userId: userId,
         userPassword: userPassword,
-        postingCount: 0,
+        postingCount: state.distributionType == DistributionType.auto ? 5 : 0,
         isPostingCheck: false,
       );
       list.add(model);
@@ -49,7 +49,18 @@ class MainViewModel extends Notifier<MainState> {
     return true;
   }
 
+  void changeIsProxySetting(bool value) {
+    state = state.copyWith(isProxySetting: value);
+  }
+
   void changeDistributionType(DistributionType type) {
+    if (type == DistributionType.auto) {
+      // 자동이면 각 계정에 5개 씩 분배
+      final newList = state.userInfoList
+          .map((user) => user.copyWith(postingCount: 5))
+          .toList();
+      state = state.copyWith(userInfoList: newList);
+    }
     state = state.copyWith(distributionType: type);
   }
 

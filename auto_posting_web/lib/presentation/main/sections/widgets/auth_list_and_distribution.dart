@@ -1,11 +1,11 @@
-import 'package:auto_posting_web/presentation/provider/main/main_provider.dart';
-import 'package:auto_posting_web/presentation/view/main/sections/widgets/user_info_row.dart';
+import 'package:auto_posting_web/presentation/main/main_provider.dart';
+import 'package:auto_posting_web/presentation/main/sections/widgets/user_info_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/theme/app_text_styles.dart';
-import '../../../../viewmodel/main/main_enums.dart';
-import '../../../../viewmodel/main/main_state.dart';
+import '../../main_enums.dart';
+import '../../main_state.dart';
 import 'common_radio_group.dart';
 
 class AuthListAndDistribution extends ConsumerWidget {
@@ -35,11 +35,11 @@ class AuthListAndDistribution extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.all(20),
             child: Column(
+              spacing: 4,
               children: state.userInfoList.isEmpty
                   ? [Center(child: Text("추가된 계정이 없습니다."))]
                   : state.userInfoList.asMap().entries.map((entry) {
                       int index = entry.key; // 여기에 index가 들어있습니다.
-
                       return UserInfoRow(index: index);
                     }).toList(),
             ),

@@ -13,6 +13,7 @@ import 'main_enums.dart';
  */
 
 class MainState {
+  final bool isProxySetting;
   final List<MainUserInfoModel> userInfoList;
   final DistributionType distributionType;
   final PostType postType;
@@ -23,6 +24,7 @@ class MainState {
   final PostingType postingType;
 
   const MainState({
+    required this.isProxySetting,
     required this.userInfoList,
     required this.distributionType,
     required this.postType,
@@ -34,6 +36,7 @@ class MainState {
   });
 
   MainState copyWith({
+    bool? isProxySetting,
     List<MainUserInfoModel>? userInfoList,
     DistributionType? distributionType,
     PostType? postType,
@@ -44,6 +47,7 @@ class MainState {
     PostingType? postingType,
   }) {
     return MainState(
+      isProxySetting: isProxySetting ?? this.isProxySetting,
       userInfoList: userInfoList ?? this.userInfoList,
       distributionType: distributionType ?? this.distributionType,
       postType: postType ?? this.postType,
@@ -57,6 +61,7 @@ class MainState {
 
   factory MainState.initial() {
     return MainState(
+      isProxySetting: false,
       userInfoList: [],
       distributionType: DistributionType.auto,
       postType: PostType.commercial,

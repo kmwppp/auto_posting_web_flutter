@@ -1,12 +1,12 @@
-import 'package:auto_posting_web/presentation/view/main/sections/widgets/commercial_widget.dart';
-import 'package:auto_posting_web/presentation/view/main/sections/widgets/common_radio_group.dart';
-import 'package:auto_posting_web/presentation/view/main/sections/widgets/informative_widget.dart';
+import 'package:auto_posting_web/presentation/main/sections/widgets/commercial_widget.dart';
+import 'package:auto_posting_web/presentation/main/sections/widgets/common_radio_group.dart';
+import 'package:auto_posting_web/presentation/main/sections/widgets/informative_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_text_styles.dart';
-import '../../../provider/main/main_provider.dart';
-import '../../../viewmodel/main/main_enums.dart';
+import '../main_enums.dart';
+import '../main_provider.dart';
 
 class PostTypeAndContentsSection extends ConsumerWidget {
   const PostTypeAndContentsSection({super.key});

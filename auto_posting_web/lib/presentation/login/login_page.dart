@@ -1,6 +1,6 @@
-import 'package:auto_posting_web/presentation/view/login/sections/login_button_section.dart';
-import 'package:auto_posting_web/presentation/view/login/sections/login_input_section.dart';
-import 'package:auto_posting_web/presentation/view/login/widgets/login_appbar.dart';
+import 'package:auto_posting_web/presentation/login/sections/login_button_section.dart';
+import 'package:auto_posting_web/presentation/login/sections/login_input_section.dart';
+import 'package:auto_posting_web/presentation/login/widgets/login_appbar.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatelessWidget {

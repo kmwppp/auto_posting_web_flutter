@@ -1,8 +1,8 @@
-import 'package:auto_posting_web/presentation/view/main/sections/widgets/auth_web_row.dart';
 import 'package:flutter/material.dart';
 
 import '../../../../../core/theme/app_text_styles.dart';
 import 'auth_mobile_column.dart';
+import 'auth_web_row.dart';
 
 class AddAuth extends StatelessWidget {
   const AddAuth({super.key});

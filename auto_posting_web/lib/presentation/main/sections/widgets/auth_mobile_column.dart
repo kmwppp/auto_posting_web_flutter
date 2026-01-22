@@ -1,8 +1,8 @@
-import 'package:auto_posting_web/presentation/view/main/sections/widgets/input_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../provider/main/main_provider.dart';
+import '../../main_provider.dart';
+import 'input_widget.dart';
 
 class AuthMobileColumn extends ConsumerWidget {
   const AuthMobileColumn({super.key});

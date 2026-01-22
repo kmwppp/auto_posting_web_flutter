@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../provider/main/main_provider.dart';
-import '../../../../viewmodel/main/main_enums.dart';
+import '../../main_enums.dart';
+import '../../main_provider.dart';
 
 class AIPhotoStyleSpinner extends ConsumerWidget {
   const AIPhotoStyleSpinner({super.key});

@@ -1,12 +1,12 @@
-import 'package:auto_posting_web/presentation/view/main/sections/blog_auth_manage_section.dart';
-import 'package:auto_posting_web/presentation/view/main/sections/post_ai_photo_setting_section.dart';
-import 'package:auto_posting_web/presentation/view/main/sections/post_ai_write_setting_section.dart';
-import 'package:auto_posting_web/presentation/view/main/sections/post_type_and_contents_section.dart';
-import 'package:auto_posting_web/presentation/view/main/sections/posting_method_setting_section.dart';
-import 'package:auto_posting_web/presentation/view/main/sections/run_and_result_section.dart';
+import 'package:auto_posting_web/presentation/main/sections/blog_auth_manage_section.dart';
+import 'package:auto_posting_web/presentation/main/sections/post_ai_photo_setting_section.dart';
+import 'package:auto_posting_web/presentation/main/sections/post_ai_write_setting_section.dart';
+import 'package:auto_posting_web/presentation/main/sections/post_type_and_contents_section.dart';
+import 'package:auto_posting_web/presentation/main/sections/posting_method_setting_section.dart';
+import 'package:auto_posting_web/presentation/main/sections/run_and_result_section.dart';
 import 'package:flutter/material.dart';
 
-import '../../../core/theme/app_text_styles.dart';
+import '../../core/theme/app_text_styles.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
