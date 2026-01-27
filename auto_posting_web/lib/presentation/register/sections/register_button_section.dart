@@ -1,13 +1,12 @@
-import 'package:auto_posting_web/core/theme/app_text_styles.dart';
 import 'package:auto_posting_web/presentation/login/login_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
+import '../../../core/theme/app_text_styles.dart';
 import '../../../routes/auth_provider.dart';
 
-class LoginButtonSection extends ConsumerWidget {
-  const LoginButtonSection({super.key});
+class RegisterButtonSection extends ConsumerWidget {
+  const RegisterButtonSection({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,8 +24,8 @@ class LoginButtonSection extends ConsumerWidget {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: const Text("로그인"),
-                  content: Text("로그인 정보가 없습니다."),
+                  title: const Text("회원가입"),
+                  content: Text("회원가입을 신청했습니다."),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
@@ -55,30 +54,10 @@ class LoginButtonSection extends ConsumerWidget {
                     ),
                   )
                 : Text(
-                    "로그인",
+                    "회원가입",
                     textAlign: TextAlign.center,
                     style: context.bodyLarge.copyWith(color: Colors.white),
                   ),
-          ),
-        ),
-
-        GestureDetector(
-          onTap: () {
-            context.push('/register');
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.blueAccent,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            width: double.infinity,
-            height: 40,
-            alignment: Alignment.center,
-            child: Text(
-              "회원가입",
-              textAlign: TextAlign.center,
-              style: context.bodyLarge.copyWith(color: Colors.white),
-            ),
           ),
         ),
       ],
