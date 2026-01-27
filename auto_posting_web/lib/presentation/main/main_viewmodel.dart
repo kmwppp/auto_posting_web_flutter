@@ -60,9 +60,12 @@ class MainViewModel extends Notifier<MainState> {
   }
 
   void updatePostingCount({required int index, required String postingCount}) {
-    final newList = [...state.userInfoList];
+    // 사용자가 다 지웠을 때는 0으로 강제 변환하기보다 빈 상태를 유지하는 게 입력하기 편합니다.
+    if (postingCount.isEmpty) {
+      // 필요한 경우 빈 값 처리 로직 (예: state에 0 저장 혹은 이전 값 유지)
+    }
 
-    // String을 int로 변환 (변환 실패 시 기본값 0)
+    final newList = [...state.userInfoList];
     int count = int.tryParse(postingCount) ?? 0;
     newList[index] = newList[index].copyWith(postingCount: count);
     state = state.copyWith(userInfoList: newList);

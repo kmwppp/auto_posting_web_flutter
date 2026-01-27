@@ -1,5 +1,6 @@
 import 'package:auto_posting_web/data/model/main_user_info_model.dart';
 import 'package:auto_posting_web/presentation/main/main_enums.dart';
+import 'package:auto_posting_web/presentation/main/sections/widgets/posting_count_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -46,29 +47,14 @@ class UserInfoRow extends ConsumerWidget {
                   alignment: Alignment.center,
                   padding: EdgeInsets.symmetric(horizontal: 20),
                   child: distributionType == DistributionType.manual
-                      ? TextField(
-                          textAlign: TextAlign.center,
-                          // int 타입을 String으로 변환하여 초기값 설정
-                          controller:
-                              TextEditingController(
-                                  text: user.postingCount.toString(),
-                                )
-                                ..selection = TextSelection.collapsed(
-                                  offset: user.postingCount.toString().length,
-                                ),
+                      ? PostingCountField(
+                          initialValue: user.postingCount,
                           onChanged: (value) {
-                            // 포트가 아닌 포스팅 개수 업데이트 함수 호출
                             notifier.updatePostingCount(
                               index: index,
                               postingCount: value,
                             );
                           },
-                          decoration: InputDecoration(
-                            isDense: true,
-                            border: InputBorder.none,
-                          ),
-                          keyboardType: TextInputType.number,
-                          style: context.bodyLarge,
                         )
                       : Text("${user.postingCount}"),
                 ),
