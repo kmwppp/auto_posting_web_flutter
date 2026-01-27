@@ -1,14 +1,15 @@
-import 'dart:convert';
-
 import 'package:auto_posting_web/data/model/blog_title_info_model.dart';
 import 'package:auto_posting_web/data/model/main_user_info_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/di/provider_container.dart';
 import 'main_enums.dart';
 import 'main_provider.dart';
 import 'main_state.dart';
 
 class MainViewModel extends Notifier<MainState> {
+  String dialogMsg = "";
+
   @override
   MainState build() {
     return MainState.initial();
@@ -201,8 +202,71 @@ class MainViewModel extends Notifier<MainState> {
     state = state.copyWith(postingType: type);
   }
 
+  bool isChkProxy() {
+    return state.isProxySetting;
+  }
+
+  /// 1. 프록시 설정을 정말 안할건지
+  /// 2. 계정이 추가되지 않았을때
+  /// 3. 계정이 추가되었고, 수동 분배일 때 갯수가 0개인 userInfo가 있을때
+  /// 4. 계정이 추가되었고, 프록시가 ON이며, proxyInfo가 비어있을 때,
+  /// 5. 워드프레스 사이트 URL이 아무것도 적혀 있지 않을 때
+  /// 6. 블로그 메인 키워드 및 제목 리스트가 0일 때
+  /// 7. 글쓰기 지침이 비어 있을 때
+  /// 8. 발행 주기가 비어 있을 때
+  // MainViewModel 안의 함수
+  ValidationResult isChkValidation() {
+    // 1. 계정 추가 여부
+    if (state.userInfoList.isEmpty) {
+      return ValidationResult(false, "네이버 계정을 추가해주세요.");
+    }
+
+    // 2. 수동 분배 시 계정 정보 검증
+    if (state.distributionType == DistributionType.manual) {
+      for (int i = 0; i < state.userInfoList.length; i++) {
+        final user = state.userInfoList[i];
+        if (user.postingCount <= 0) {
+          return ValidationResult(false, "${i + 1}번째 계정의 포스팅 갯수를 입력해주세요.");
+        }
+        if (state.isProxySetting &&
+            (user.proxy_id == "" || user.proxy_pw == "" || user.port == "")) {
+          return ValidationResult(false, "${i + 1}번째 계정의 프록시 정보를 입력해주세요.");
+        }
+      }
+    }
+
+    for (int i = 0; i < state.userInfoList.length; i++) {
+      final user = state.userInfoList[i];
+      if (state.isProxySetting &&
+          (user.proxy_id == "" || user.proxy_pw == "" || user.port == "")) {
+        return ValidationResult(false, "${i + 1}번째 계정의 프록시 정보를 입력해주세요.");
+      }
+    }
+
+    // 3. 워드프레스 URL
+    if (ref.read(wordpressURLControllerProvider).text.trim().isEmpty) {
+      return ValidationResult(false, "워드프레스 사이트 URL을 입력해주세요.");
+    }
+
+    // 4. 제목 리스트
+    if (state.titleList.isEmpty) {
+      return ValidationResult(false, "메인 키워드 및 제목을 추가해주세요.");
+    }
+
+    // 5. 발행 주기
+    final term =
+        int.tryParse(ref.read(postingCycleControllerProvider).text) ?? 0;
+    if (term <= 0) {
+      return ValidationResult(false, "올바른 발행 주기를 입력해주세요.");
+    }
+
+    // 모든 검증 통과
+    return ValidationResult(true, "");
+  }
+
   // 서버로 보낼 JSON 매핑 메소드
   Future<void> sendToServer() async {
+    state = state.copyWith(isLoading: true);
     // 1. 컨트롤러들로부터 값 추출
     final proxyUrl = ref.read(proxyUrlControllerProvider).text;
     final siteUrl = ref.read(wordpressURLControllerProvider).text;
@@ -233,8 +297,24 @@ class MainViewModel extends Notifier<MainState> {
     };
 
     // 확인용 출력
-    print(jsonEncode(requestData));
+    // print(jsonEncode(requestData));
 
     // TODO: 이후 http 패키지 등을 사용하여 서버 전송 로직 수행
+    try {
+      final useCase = ref.read(sendPostingDataUseCaseProvider);
+      await useCase.execute(requestData);
+      print("서버 전송 성공");
+    } catch (e) {
+      print("서버 전송 실패: $e");
+    } finally {
+      state = state.copyWith(isLoading: false);
+    }
   }
+}
+
+class ValidationResult {
+  final bool isValid;
+  final String message;
+
+  ValidationResult(this.isValid, this.message);
 }

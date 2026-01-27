@@ -1,6 +1,7 @@
 import 'package:auto_posting_web/presentation/main/sections/widgets/input_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/theme/app_text_styles.dart';
 import '../../main_provider.dart';
@@ -23,7 +24,39 @@ class InsertProxy extends ConsumerWidget {
       children: [
         Row(
           children: [
-            Expanded(child: Text("프록시 설정", style: context.bodyLarge)),
+            Expanded(
+              child: Row(
+                children: [
+                  Text(
+                    "프록시 설정",
+                    style: context.bodyLarge.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  SizedBox(width: 20),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(100),
+                    child: Container(
+                      width: 30,
+                      height: 30,
+                      alignment: Alignment.center,
+                      color: Colors.blueAccent,
+                      child: IconButton(
+                        onPressed: () {
+                          context.push("/proxy_description");
+                        },
+                        icon: Icon(
+                          Icons.question_mark,
+                          color: Colors.white,
+                          size: 15,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
             // 2. Switch 위젯 배치
             Switch(
               value: isProxySetting,

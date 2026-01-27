@@ -25,6 +25,8 @@ class UserInfoRow extends ConsumerWidget {
       children: [
         Row(
           children: [
+            Text("${index + 1}.", style: context.titleMideum),
+            SizedBox(width: 10),
             Expanded(
               child: Text(
                 "ID: ${state.userInfoList[index].userId} / PW: ${state.userInfoList[index].userPassword}",
@@ -75,10 +77,12 @@ class UserInfoRow extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 14),
-              Text("계정 프록시 설정", style: context.bodyLarge),
+              Text(
+                "계정 프록시 설정",
+                style: context.bodyLarge.copyWith(fontWeight: FontWeight.bold),
+              ),
               SizedBox(height: 10),
               Row(
-                spacing: 10,
                 children: [
                   Text("아이디: ", style: context.bodyLarge),
                   inputProxySet(
@@ -94,6 +98,8 @@ class UserInfoRow extends ConsumerWidget {
                     width: 180,
                   ),
 
+                  SizedBox(width: 20),
+
                   Text("비밀번호: ", style: context.bodyLarge),
                   inputProxySet(
                     user: user,
@@ -107,7 +113,7 @@ class UserInfoRow extends ConsumerWidget {
                     },
                     width: 180,
                   ),
-
+                  SizedBox(width: 20),
                   Text("포트번호: ", style: context.bodyLarge),
                   inputProxySet(
                     user: user,

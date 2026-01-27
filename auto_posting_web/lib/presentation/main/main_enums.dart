@@ -35,3 +35,12 @@ extension AIPhotoTypeExtension on AIPhotoType {
 }
 
 enum PostingType { immediately, reservation }
+
+/// 1. 프록시 설정을 정말 안할건지
+/// 2. 계정이 추가되지 않았을때
+/// 3. 계정이 추가되었고, 수동 분배일 때 갯수가 0개인 userInfo가 있을때
+/// 4. 계정이 추가되었고, 프록시가 ON이며, proxyInfo가 비어있을 때,
+/// 5. 워드프레스 사이트 URL이 아무것도 적혀 있지 않을 때
+/// 6. 블로그 메인 키워드 및 제목 리스트가 0일 때
+/// 7. 글쓰기 지침이 비어 있을 때
+/// 8. 발행 주기가 비어 있을 때

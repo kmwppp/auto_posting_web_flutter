@@ -14,6 +14,8 @@ import 'main_enums.dart';
  */
 
 class MainState {
+  //로딩 상태
+  final bool isLoading;
   final bool isProxySetting;
   final List<MainUserInfoModel> userInfoList;
   final DistributionType distributionType;
@@ -27,6 +29,7 @@ class MainState {
   final List<BlogTitleInfoModel> titleList;
 
   const MainState({
+    required this.isLoading,
     required this.isProxySetting,
     required this.userInfoList,
     required this.distributionType,
@@ -41,6 +44,7 @@ class MainState {
   });
 
   MainState copyWith({
+    bool? isLoading,
     bool? isProxySetting,
     List<MainUserInfoModel>? userInfoList,
     DistributionType? distributionType,
@@ -54,6 +58,7 @@ class MainState {
     List<BlogTitleInfoModel>? titleList,
   }) {
     return MainState(
+      isLoading: isLoading ?? this.isLoading,
       isProxySetting: isProxySetting ?? this.isProxySetting,
       userInfoList: userInfoList ?? this.userInfoList,
       distributionType: distributionType ?? this.distributionType,
@@ -70,6 +75,7 @@ class MainState {
 
   factory MainState.initial() {
     return MainState(
+      isLoading: false,
       isProxySetting: false,
       userInfoList: [],
       distributionType: DistributionType.auto,

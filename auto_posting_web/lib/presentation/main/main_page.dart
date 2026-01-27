@@ -13,7 +13,12 @@ class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("네이버 포스팅 자동화 시스템")),
+      appBar: AppBar(
+        title: Text(
+          "네이버 포스팅 자동화 시스템",
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           // 1. 스크롤 뷰로 감싸기

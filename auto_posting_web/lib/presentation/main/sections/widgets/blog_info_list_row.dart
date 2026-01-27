@@ -15,34 +15,70 @@ class BlogInfoListRow extends ConsumerWidget {
     final notifier = ref.read(mainViewModelProvider.notifier);
     return SizedBox(
       width: double.infinity,
-      child: Column(
-        spacing: 4,
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  "메인 키워드: ${state.titleList[index].main_keyword}",
-                  style: context.bodyLarge,
+          Text("${index + 1}.", style: context.titleMideum),
+          SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              spacing: 4,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "메인 키워드:",
+                            style: context.bodyLarge.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(width: 10),
+                          Text(
+                            state.titleList[index].main_keyword,
+                            style: context.bodyLarge,
+                          ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () {
+                        notifier.removeBlogInfo(index: index);
+                      },
+                      icon: Icon(Icons.close, size: 24),
+                    ),
+                  ],
                 ),
-              ),
-              IconButton(
-                onPressed: () {
-                  notifier.removeBlogInfo(index: index);
-                },
-                icon: Icon(Icons.close, size: 24),
-              ),
-            ],
-          ),
-          Text(
-            "제목: ${state.titleList[index].posting_title}",
-            style: context.bodyLarge,
-          ),
+                Row(
+                  children: [
+                    Text(
+                      "제목:",
+                      style: context.bodyLarge.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        state.titleList[index].posting_title,
+                        style: context.bodyLarge,
+                      ),
+                    ),
+                  ],
+                ),
 
-          SizedBox(width: 20),
+                SizedBox(width: 20),
 
-          Divider(),
+                Divider(),
+              ],
+            ),
+          ),
         ],
       ),
     );
