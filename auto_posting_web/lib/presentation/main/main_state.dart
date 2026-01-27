@@ -1,3 +1,4 @@
+import 'package:auto_posting_web/data/model/blog_title_info_model.dart';
 import 'package:auto_posting_web/data/model/main_user_info_model.dart';
 
 import 'main_enums.dart';
@@ -17,22 +18,26 @@ class MainState {
   final List<MainUserInfoModel> userInfoList;
   final DistributionType distributionType;
   final PostType postType;
+  final BlogInsertType blogInsertType;
   final CreatePostType createPostType;
   final bool isQRLinkChange;
   final double aiImgCount;
   final AIPhotoType selectedImageStyle;
   final PostingType postingType;
+  final List<BlogTitleInfoModel> titleList;
 
   const MainState({
     required this.isProxySetting,
     required this.userInfoList,
     required this.distributionType,
     required this.postType,
+    required this.blogInsertType,
     required this.createPostType,
     required this.isQRLinkChange,
     required this.aiImgCount,
     required this.selectedImageStyle,
     required this.postingType,
+    required this.titleList,
   });
 
   MainState copyWith({
@@ -40,22 +45,26 @@ class MainState {
     List<MainUserInfoModel>? userInfoList,
     DistributionType? distributionType,
     PostType? postType,
+    BlogInsertType? blogInsertType,
     CreatePostType? createPostType,
     bool? isQRLinkChange,
     double? aiImgCount,
     AIPhotoType? selectedImageStyle,
     PostingType? postingType,
+    List<BlogTitleInfoModel>? titleList,
   }) {
     return MainState(
       isProxySetting: isProxySetting ?? this.isProxySetting,
       userInfoList: userInfoList ?? this.userInfoList,
       distributionType: distributionType ?? this.distributionType,
       postType: postType ?? this.postType,
+      blogInsertType: blogInsertType ?? this.blogInsertType,
       createPostType: createPostType ?? this.createPostType,
       isQRLinkChange: isQRLinkChange ?? this.isQRLinkChange,
       aiImgCount: aiImgCount ?? this.aiImgCount,
       selectedImageStyle: selectedImageStyle ?? this.selectedImageStyle,
       postingType: postingType ?? this.postingType,
+      titleList: titleList ?? this.titleList,
     );
   }
 
@@ -65,11 +74,13 @@ class MainState {
       userInfoList: [],
       distributionType: DistributionType.auto,
       postType: PostType.commercial,
+      blogInsertType: BlogInsertType.single,
       createPostType: CreatePostType.title,
       isQRLinkChange: true,
       aiImgCount: 0,
       selectedImageStyle: AIPhotoType.photoRealistic,
       postingType: PostingType.immediately,
+      titleList: [],
     );
   }
 }

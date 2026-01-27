@@ -1,5 +1,4 @@
 import 'package:auto_posting_web/presentation/main/sections/blog_auth_manage_section.dart';
-import 'package:auto_posting_web/presentation/main/sections/post_ai_photo_setting_section.dart';
 import 'package:auto_posting_web/presentation/main/sections/post_ai_write_setting_section.dart';
 import 'package:auto_posting_web/presentation/main/sections/post_type_and_contents_section.dart';
 import 'package:auto_posting_web/presentation/main/sections/posting_method_setting_section.dart';
@@ -35,15 +34,15 @@ class MainPage extends StatelessWidget {
               const SizedBox(height: 16),
               PostAIWriteSettingSection(),
               const SizedBox(height: 20),
-              _sectionTitle(context: context, title: "4. AI 사진 생성 설정"),
-              const SizedBox(height: 16),
-              PostAIPhotoSettingSection(),
+              // _sectionTitle(context: context, title: "4. AI 사진 생성 설정"),
+              // const SizedBox(height: 16),
+              // PostAIPhotoSettingSection(),
               const SizedBox(height: 20),
-              _sectionTitle(context: context, title: "5. 발행 방식 설정"),
+              _sectionTitle(context: context, title: "4. 발행 방식 설정"),
               const SizedBox(height: 16),
               PostingMethodSettingSection(),
               const SizedBox(height: 20),
-              _sectionTitle(context: context, title: "6. 실행 및 결과"),
+              _sectionTitle(context: context, title: "5. 실행 및 결과"),
               const SizedBox(height: 16),
               RunAndResultSection(),
               const SizedBox(height: 80),

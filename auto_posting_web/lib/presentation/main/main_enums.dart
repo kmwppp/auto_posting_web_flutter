@@ -4,6 +4,8 @@ enum PostType { commercial, informative }
 
 enum CreatePostType { title, url }
 
+enum BlogInsertType { single, multi }
+
 enum AIPhotoType {
   photoRealistic,
   digitalArt,

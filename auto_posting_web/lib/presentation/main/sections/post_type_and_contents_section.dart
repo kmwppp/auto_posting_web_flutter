@@ -29,10 +29,10 @@ class PostTypeAndContentsSection extends ConsumerWidget {
                   label: '상업성 글 (워드프레스 연동)',
                   value: PostType.commercial,
                 ),
-                CommonRadioItem(
-                  label: '정보성 글 (링크 없음)',
-                  value: PostType.informative,
-                ),
+                // CommonRadioItem(
+                //   label: '정보성 글 (링크 없음)',
+                //   value: PostType.informative,
+                // ),
               ],
               onChanged: (value) => notifier.changePostType(value),
             ),

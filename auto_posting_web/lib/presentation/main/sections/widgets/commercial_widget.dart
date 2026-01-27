@@ -1,10 +1,13 @@
+import 'package:auto_posting_web/presentation/main/main_enums.dart';
+import 'package:auto_posting_web/presentation/main/sections/widgets/add_blog_info_multi.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../../core/theme/app_text_styles.dart';
-import '../../main_enums.dart';
 import '../../main_provider.dart';
+import 'add_blog_info_single.dart';
 import 'auto_qr_link_create.dart';
+import 'blog_info_list_row.dart';
 import 'common_radio_group.dart';
 
 class CommercialWidget extends ConsumerWidget {
@@ -12,32 +15,29 @@ class CommercialWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final createPostType = ref.watch(
-      mainViewModelProvider.select((s) => s.createPostType),
-    );
-    final notifier = ref.read(mainViewModelProvider.notifier);
+    final state = ref.watch(mainViewModelProvider);
     final urlController = ref.watch(wordpressURLControllerProvider);
-    final blogTitleController = ref.watch(blogTitleControllerProvider);
+    final notifier = ref.read(mainViewModelProvider.notifier);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(height: 26),
-        Text("상업성 글 생성 방식", style: context.bodyLarge),
-        CommonRadioGroup<CreatePostType>(
-          groupValue: createPostType,
-          items: [
-            CommonRadioItem(label: '제목으로 글 찾기', value: CreatePostType.title),
-            CommonRadioItem(label: 'URL로 글 가져오기', value: CreatePostType.url),
-          ],
-          onChanged: (value) => notifier.changeCreatePostType(value),
-        ),
-        SizedBox(height: 16),
+        // Text("상업성 글 생성 방식", style: context.bodyLarge),
+        // CommonRadioGroup<CreatePostType>(
+        //   groupValue: createPostType,
+        //   items: [
+        //     CommonRadioItem(label: '제목으로 글 찾기', value: CreatePostType.title),
+        //     CommonRadioItem(label: 'URL로 글 가져오기', value: CreatePostType.url),
+        //   ],
+        //   onChanged: (value) => notifier.changeCreatePostType(value),
+        // ),
+        // SizedBox(height: 16),
         Text("워드프레스 사이트 URL", style: context.bodyLarge),
         SizedBox(height: 6),
         _input(
           context: context,
-          inputHint: "https://example.com",
+          inputHint: "https://example.com/ (당신의 워드프레스 메인 주소 입력)",
           controller: urlController,
           align: Alignment.center,
         ),
@@ -46,15 +46,68 @@ class CommercialWidget extends ConsumerWidget {
           "프로그램이 이 사이트에서 제목과 가장 유사한 글을 찾습니다.",
           style: context.body.copyWith(color: Colors.grey),
         ),
-
         SizedBox(height: 16),
-
-        _input(
-          context: context,
-          inputHint: "발행할 포스트 제목을 한 줄에 하나씩 입력하세요.",
-          controller: blogTitleController,
-          boxHeight: 250,
-          align: Alignment.topLeft,
+        Divider(),
+        SizedBox(height: 16),
+        Text("블로그 메인 키워드 및 제목", style: context.bodyLarge),
+        SizedBox(height: 6),
+        CommonRadioGroup<BlogInsertType>(
+          groupValue: state.blogInsertType,
+          items: [
+            CommonRadioItem(label: '한개씩 입력', value: BlogInsertType.single),
+            CommonRadioItem(label: '여러개 입력', value: BlogInsertType.multi),
+          ],
+          onChanged: (value) => notifier.changeBlogInsertType(value),
+        ),
+        if (state.blogInsertType == BlogInsertType.single) AddBlogInfoSingle(),
+        if (state.blogInsertType == BlogInsertType.multi) AddBlogInfoMulti(),
+        SizedBox(height: 10),
+        GestureDetector(
+          onTap: () {
+            notifier.resetBlogInfoModel();
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.grey,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            width: double.infinity,
+            height: 50,
+            alignment: Alignment.center,
+            child: Text(
+              "글 내용 초기화",
+              textAlign: TextAlign.center,
+              style: AppTextStyles.titleMedium.copyWith(color: Colors.black),
+            ),
+          ),
+        ),
+        SizedBox(height: 16),
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: Colors.black, width: 2),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              spacing: 4,
+              children: state.titleList.isEmpty
+                  ? [
+                      Center(
+                        child: Text(
+                          "추가된 블로그 주제가 없습니다.",
+                          style: AppTextStyles.bodyLarge,
+                        ),
+                      ),
+                    ]
+                  : state.titleList.asMap().entries.map((entry) {
+                      int index = entry.key; // 여기에 index가 들어있습니다.
+                      return BlogInfoListRow(index: index);
+                    }).toList(),
+            ),
+            // child: Center(child: Text("추가된 계정이 없습니다.")),
+          ),
         ),
         SizedBox(height: 16),
         Divider(),

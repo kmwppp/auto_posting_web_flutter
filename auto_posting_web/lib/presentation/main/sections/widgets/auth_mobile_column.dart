@@ -28,10 +28,10 @@ class AuthMobileColumn extends ConsumerWidget {
           child: Container(
             decoration: BoxDecoration(
               color: Colors.grey,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(4),
             ),
             width: double.infinity,
-            height: 40,
+            height: 50,
             alignment: Alignment.center,
             child: Text("계정 추가", textAlign: TextAlign.center),
           ),

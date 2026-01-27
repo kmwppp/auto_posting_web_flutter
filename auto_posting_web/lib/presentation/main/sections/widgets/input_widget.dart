@@ -15,10 +15,10 @@ class InputWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 40,
+      height: 50,
       decoration: BoxDecoration(
         border: BoxBorder.all(color: Colors.black),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(4),
       ),
       alignment: Alignment.center,
       padding: EdgeInsets.symmetric(horizontal: 20),

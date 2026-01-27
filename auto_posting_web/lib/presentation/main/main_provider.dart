@@ -29,6 +29,27 @@ final pwControllerProvider = Provider.autoDispose((ref) {
   return controller;
 });
 
+// 포트 번호 컨트롤러
+final portControllerProvider = Provider.autoDispose((ref) {
+  final controller = TextEditingController();
+  ref.onDispose(() => controller.dispose());
+  return controller;
+});
+
+// 블로그 메인 키워드 컨트롤러
+final mainKeyWordControllerProvider = Provider.autoDispose((ref) {
+  final controller = TextEditingController();
+  ref.onDispose(() => controller.dispose());
+  return controller;
+});
+
+// 블로그 제목 컨트롤러
+final postingTitleWordControllerProvider = Provider.autoDispose((ref) {
+  final controller = TextEditingController();
+  ref.onDispose(() => controller.dispose());
+  return controller;
+});
+
 // 워드 프레스 URL 컨트롤러
 final wordpressURLControllerProvider = Provider.autoDispose((ref) {
   final controller = TextEditingController();

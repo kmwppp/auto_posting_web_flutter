@@ -43,11 +43,11 @@ class InsertProxy extends ConsumerWidget {
             children: [
               SizedBox(height: 8),
               Text(
-                "구매하신 프록시의 URL을 입력하세요.",
+                "구매하신 프록시의 IP를 입력하세요.",
                 style: context.body.copyWith(color: Colors.grey),
               ),
               InputWidget(
-                inputHint: "프록시 URL을 입력하세요.",
+                inputHint: "프록시 IP을 입력하세요.",
                 controller: proxyController,
               ),
             ],

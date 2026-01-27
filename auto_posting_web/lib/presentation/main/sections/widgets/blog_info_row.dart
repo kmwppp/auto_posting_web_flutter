@@ -1,41 +1,67 @@
-import 'package:auto_posting_web/presentation/main/main_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_text_styles.dart';
+import '../../main_provider.dart';
 
-class PostAIWriteSettingSection extends ConsumerWidget {
-  const PostAIWriteSettingSection({super.key});
+class BlogInfoRow extends ConsumerWidget {
+  const BlogInfoRow({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final aiWriteOrderController = ref.watch(aiwriteOrderControllerProvider);
-    return SizedBox(
-      width: double.infinity,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
+    final mainKeyController = ref.watch(mainKeyWordControllerProvider);
+    final blogTitleController = ref.watch(blogTitleControllerProvider);
+    final notifier = ref.read(mainViewModelProvider.notifier);
+
+    return Column(
+      children: [
+        Row(
           spacing: 10,
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Text("AI 모델 선택", style: context.bodyLarge),
-            // Text(
-            //   "* AI 모델 선택란이었으나, 초기는 Chatgpt 4.0 mini로 우선 제작",
-            //   style: context.body.copyWith(color: Colors.grey),
-            // ),
-            // SizedBox(height: 14),
-            Text("AI 글쓰기 지침", style: context.bodyLarge),
-            _input(
-              context: context,
-              inputHint:
-                  "모든 글(상업성, 정보성) 작성 시 AI가 공통으로 따라야 할 지침을 입력하세요. (예: 친근한 말투, 각 문단은 3문장 이내 등)",
-              controller: aiWriteOrderController,
-              align: Alignment.topLeft,
-              boxHeight: 200,
+            Expanded(
+              child: _input(
+                context: context,
+                inputHint: "메인 키워드",
+                controller: mainKeyController,
+                align: Alignment.topLeft,
+                boxHeight: 300,
+              ),
+            ),
+            Expanded(
+              child: _input(
+                context: context,
+                inputHint: "블로그 제목",
+                controller: blogTitleController,
+                align: Alignment.topLeft,
+                boxHeight: 300,
+              ),
             ),
           ],
         ),
-      ),
+        SizedBox(height: 20),
+        GestureDetector(
+          onTap: () {
+            notifier.addBlogInfoMulti(
+              mainKeyword: mainKeyController.text,
+              postingTitle: blogTitleController.text,
+            );
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.circular(4),
+            ),
+            width: double.infinity,
+            height: 50,
+            alignment: Alignment.center,
+            child: Text(
+              "글 내용 추가",
+              textAlign: TextAlign.center,
+              style: AppTextStyles.titleMedium.copyWith(color: Colors.white),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
