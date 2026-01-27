@@ -7,14 +7,14 @@ class LoginInputWidget extends StatelessWidget {
     super.key,
     required this.inputTitle,
     required this.inputHint,
-    // required this.onChanged,
+    required this.onChanged,
   });
 
   final String inputTitle;
   final String inputHint;
 
   //실무기준으로 onChange를 받는다
-  // final ValueChanged<String> onChanged;
+  final ValueChanged<String> onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +22,10 @@ class LoginInputWidget extends StatelessWidget {
       spacing: 10,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(inputTitle, style: context.bodyLarge),
+        Text(
+          inputTitle,
+          style: context.bodyLarge.copyWith(fontWeight: FontWeight.bold),
+        ),
         _inputUserInfo(context),
       ],
     );
@@ -39,7 +42,7 @@ class LoginInputWidget extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 20),
         child: TextField(
           onChanged: (value) {
-            // onChanged(value);
+            onChanged(value);
           },
           decoration: InputDecoration(
             isDense: true,

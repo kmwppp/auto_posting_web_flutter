@@ -8,6 +8,6 @@ class LoginAppbar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    return AppBar(backgroundColor: Colors.grey, title: Text("포스팅 자동화 시스템"));
+    return AppBar(backgroundColor: Colors.grey, title: Text("네이버 포스팅 자동화 시스템"));
   }
 }
