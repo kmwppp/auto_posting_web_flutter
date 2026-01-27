@@ -35,6 +35,22 @@ class MainViewModel extends Notifier<MainState> {
     print("state.userInfoList: ${state.userInfoList.length}");
   }
 
+  void updateProxyId({required int index, required String id}) {
+    final newList = [...state.userInfoList];
+    // 해당 인덱스의 모델만 copyWith로 포트 번호 교체
+    newList[index] = newList[index].copyWith(proxy_id: id);
+
+    state = state.copyWith(userInfoList: newList);
+  }
+
+  void updateProxyPw({required int index, required String pw}) {
+    final newList = [...state.userInfoList];
+    // 해당 인덱스의 모델만 copyWith로 포트 번호 교체
+    newList[index] = newList[index].copyWith(proxy_pw: pw);
+
+    state = state.copyWith(userInfoList: newList);
+  }
+
   void updatePort({required int index, required String port}) {
     final newList = [...state.userInfoList];
     // 해당 인덱스의 모델만 copyWith로 포트 번호 교체

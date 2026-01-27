@@ -1,6 +1,5 @@
 import 'package:auto_posting_web/data/model/main_user_info_model.dart';
 import 'package:auto_posting_web/presentation/main/main_enums.dart';
-import 'package:auto_posting_web/presentation/main/main_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -98,14 +97,13 @@ class UserInfoRow extends ConsumerWidget {
                   Text("아이디: ", style: context.bodyLarge),
                   inputProxySet(
                     user: user,
-                    notifier: notifier,
                     context: context,
-                    controller: TextEditingController(text: user.port)
+                    controller: TextEditingController(text: user.proxy_id)
                       ..selection = TextSelection.collapsed(
                         offset: user.proxy_id.length,
                       ),
                     onChanged: (value) {
-                      notifier.updatePort(index: index, port: value);
+                      notifier.updateProxyId(index: index, id: value);
                     },
                     width: 180,
                   ),
@@ -113,14 +111,13 @@ class UserInfoRow extends ConsumerWidget {
                   Text("비밀번호: ", style: context.bodyLarge),
                   inputProxySet(
                     user: user,
-                    notifier: notifier,
                     context: context,
-                    controller: TextEditingController(text: user.port)
+                    controller: TextEditingController(text: user.proxy_pw)
                       ..selection = TextSelection.collapsed(
                         offset: user.proxy_pw.length,
                       ),
                     onChanged: (value) {
-                      notifier.updatePort(index: index, port: value);
+                      notifier.updateProxyPw(index: index, pw: value);
                     },
                     width: 180,
                   ),
@@ -128,7 +125,6 @@ class UserInfoRow extends ConsumerWidget {
                   Text("포트번호: ", style: context.bodyLarge),
                   inputProxySet(
                     user: user,
-                    notifier: notifier,
                     context: context,
                     controller: TextEditingController(text: user.port)
                       ..selection = TextSelection.collapsed(
@@ -151,7 +147,6 @@ class UserInfoRow extends ConsumerWidget {
 
   Container inputProxySet({
     required MainUserInfoModel user,
-    required MainViewModel notifier,
     required BuildContext context,
     required TextEditingController controller,
     required void Function(String) onChanged,
