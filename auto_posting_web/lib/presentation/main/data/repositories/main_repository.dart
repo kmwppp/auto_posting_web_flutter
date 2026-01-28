@@ -1,3 +1,4 @@
 abstract class MainRepository {
-  Future<void> sendPostingData(Map<String, dynamic> data);
+  Future<dynamic> sendPostingData(Map<String, dynamic> data);
+  Stream<String> getLogStream(String userId);
 }

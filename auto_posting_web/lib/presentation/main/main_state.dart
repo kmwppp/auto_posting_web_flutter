@@ -28,6 +28,8 @@ class MainState {
   final PostingType postingType;
   final List<BlogTitleInfoModel> titleList;
 
+  final List<String> logList;
+
   const MainState({
     required this.isLoading,
     required this.isProxySetting,
@@ -41,6 +43,7 @@ class MainState {
     required this.selectedImageStyle,
     required this.postingType,
     required this.titleList,
+    required this.logList,
   });
 
   MainState copyWith({
@@ -56,6 +59,7 @@ class MainState {
     AIPhotoType? selectedImageStyle,
     PostingType? postingType,
     List<BlogTitleInfoModel>? titleList,
+    List<String>? logList,
   }) {
     return MainState(
       isLoading: isLoading ?? this.isLoading,
@@ -70,6 +74,7 @@ class MainState {
       selectedImageStyle: selectedImageStyle ?? this.selectedImageStyle,
       postingType: postingType ?? this.postingType,
       titleList: titleList ?? this.titleList,
+      logList: logList ?? this.logList,
     );
   }
 
@@ -87,6 +92,7 @@ class MainState {
       selectedImageStyle: AIPhotoType.photoRealistic,
       postingType: PostingType.immediately,
       titleList: [],
+      logList: [],
     );
   }
 }

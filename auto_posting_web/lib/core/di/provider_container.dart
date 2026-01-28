@@ -6,6 +6,7 @@ import '../../presentation/main/data/data_source/main_remote_data_source.dart';
 import '../../presentation/main/data/repositories/main_repository.dart';
 import '../../presentation/main/data/repositories/main_repository_impl.dart';
 import '../../presentation/main/domain/use_cases/send_posting_data_use_case.dart';
+import '../../presentation/main/domain/use_cases/subscribe_log_use_case.dart';
 
 // 1. Dio
 final dioProvider = Provider((ref) => Dio());
@@ -23,4 +24,9 @@ final mainRepositoryProvider = Provider<MainRepository>(
 // 4. UseCase
 final sendPostingDataUseCaseProvider = Provider(
   (ref) => SendPostingDataUseCase(ref.read(mainRepositoryProvider)),
+);
+
+// 5. [추가] UseCase (신규: 실시간 로그 구독)
+final subscribeLogUseCaseProvider = Provider(
+  (ref) => SubscribeLogUseCase(ref.read(mainRepositoryProvider)),
 );

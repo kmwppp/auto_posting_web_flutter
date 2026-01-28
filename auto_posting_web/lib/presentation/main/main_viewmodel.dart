@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:auto_posting_web/data/model/blog_title_info_model.dart';
 import 'package:auto_posting_web/data/model/main_user_info_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -264,48 +266,106 @@ class MainViewModel extends Notifier<MainState> {
     return ValidationResult(true, "");
   }
 
+  // [수정] 로그 수신 전용 메서드
+  void _listenToLogs(String userId) {
+    // 기존 로그 초기화
+    state = state.copyWith(logList: []);
+
+    // 1. 유즈케이스 가져오기
+    final subscribeUseCase = ref.read(subscribeLogUseCaseProvider);
+
+    // 2. 스트림 구독 시작 (Base URL은 DataSource나 UseCase 내부에서 이미 처리되지만, 필요시 조합)
+    subscribeUseCase
+        .execute(userId)
+        .listen(
+          (newLog) {
+            if (newLog.isNotEmpty) {
+              // 리스트 업데이트 (불변성 유지)
+              state = state.copyWith(logList: [...state.logList, newLog]);
+            }
+          },
+          onError: (error) {
+            print("SSE 에러 발생: $error");
+            state = state.copyWith(
+              logList: [...state.logList, "연결 에러 발생: $error"],
+            );
+          },
+        );
+  }
+
   // 서버로 보낼 JSON 매핑 메소드
+  // [수정] 서버로 보낼 JSON 매핑 메소드
   Future<void> sendToServer() async {
     state = state.copyWith(isLoading: true);
-    // 1. 컨트롤러들로부터 값 추출
+
+    // 1. 컨트롤러들로부터 값 추출 (기존과 동일)
     final proxyUrl = ref.read(proxyUrlControllerProvider).text;
     final siteUrl = ref.read(wordpressURLControllerProvider).text;
     final aiWriteRole = ref.read(aiwriteOrderControllerProvider).text;
     final postingTerm =
         int.tryParse(ref.read(postingCycleControllerProvider).text) ?? 0;
 
-    // 2. 최종 JSON 데이터 구성
+    // 2. JSON 데이터 구성 (기존과 동일)
     final Map<String, dynamic> requestData = {
       "proxy": proxyUrl,
       "proxyUse": state.isProxySetting,
-
-      // 리스트 모델들을 JSON 리스트로 변환
       "authList": state.userInfoList.map((e) => e.toJson()).toList(),
-
-      // Enum 값들은 .name 또는 특정 스트링으로 변환 필요
       "postType": state.postType.name,
       "siteUrl": siteUrl,
-
       "postTitle": state.titleList.map((e) => e.toJson()).toList(),
-
       "autoChangeQRLink": state.isQRLinkChange,
       "aiWriteRole": aiWriteRole,
       "postingTerm": postingTerm,
-
-      // PostingType (예: immediately)
       "postingTermType": state.postingType.name,
     };
 
-    // 확인용 출력
-    // print(jsonEncode(requestData));
-
-    // TODO: 이후 http 패키지 등을 사용하여 서버 전송 로직 수행
     try {
       final useCase = ref.read(sendPostingDataUseCaseProvider);
-      await useCase.execute(requestData);
-      print("서버 전송 성공");
+      final result = await useCase.execute(requestData);
+
+      // [디버깅 추가] 서버가 준 데이터의 '진짜 타입'을 로그창에 찍어보세요.
+      print("DEBUG: 서버 응답 타입: ${result.runtimeType}");
+      print("DEBUG: 서버 응답 실제 내용: $result");
+
+      // 만약 String으로 들어온다면 JSON으로 변환해주는 로직 추가
+      dynamic finalResult = result;
+      if (result is String) {
+        finalResult = jsonDecode(result);
+      }
+
+      // 1. finalResult로 체크
+      if (finalResult == null || finalResult is! Map) {
+        state = state.copyWith(
+          logList: [...state.logList, "서버 데이터 형식 오류 (${result.runtimeType})"],
+        );
+        return;
+      }
+
+      // 2. 변환
+      final response = Map<String, dynamic>.from(finalResult);
+
+      // 3. 'status' 키가 존재하는지 확인 후 처리
+      if (response['status'] == 'success') {
+        print("서버 전송 성공");
+
+        final String userIdFromRoot =
+            response['currentUserId']?.toString() ?? "";
+
+        if (userIdFromRoot.isNotEmpty) {
+          _listenToLogs(userIdFromRoot);
+        } else {
+          state = state.copyWith(
+            logList: [...state.logList, "서버 응답에 사용자 ID가 없습니다."],
+          );
+        }
+      } else {
+        final errorMsg = response['message'] ?? "알 수 없는 에러";
+        print("서버 응답 오류: $errorMsg");
+        state = state.copyWith(logList: [...state.logList, "서버 오류: $errorMsg"]);
+      }
     } catch (e) {
-      print("서버 전송 실패: $e");
+      print("통신 실패 상세: $e");
+      state = state.copyWith(logList: [...state.logList, "통신 실패: $e"]);
     } finally {
       state = state.copyWith(isLoading: false);
     }

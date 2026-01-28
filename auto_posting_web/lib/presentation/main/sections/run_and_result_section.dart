@@ -54,7 +54,7 @@ class RunAndResultSection extends ConsumerWidget {
           _buildStartButton(context, ref, notifier, state),
           const SizedBox(height: 20),
           // 결과 로그 섹션
-          _buildResultLog(context),
+          _buildResultLog(context, ref),
         ],
       ),
     );
@@ -101,7 +101,21 @@ class RunAndResultSection extends ConsumerWidget {
     );
   }
 
-  Widget _buildResultLog(BuildContext context) {
+  Widget _buildResultLog(BuildContext context, WidgetRef ref) {
+    // 1. ViewModel의 상태 중 logList만 감시합니다.
+    final logList = ref.watch(mainViewModelProvider.select((s) => s.logList));
+
+    // 2. 자동 스크롤을 위한 컨트롤러 (StatefulWidget의 필드나 Provider로 관리하는 것이 좋지만,
+    // 여기서는 위젯 내에서 사용할 수 있도록 예시를 구성합니다.)
+    final ScrollController scrollController = ScrollController();
+
+    // 로그가 추가될 때마다 최하단으로 스크롤 이동
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (scrollController.hasClients) {
+        scrollController.jumpTo(scrollController.position.maxScrollExtent);
+      }
+    });
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -109,14 +123,32 @@ class RunAndResultSection extends ConsumerWidget {
         const SizedBox(height: 6),
         Container(
           width: double.infinity,
-          height: 150,
-          // 로그 창은 높이가 어느 정도 있는 것이 좋음
+          height: 250, // 로그가 많아질 것을 대비해 높이를 조금 키웠습니다.
           decoration: BoxDecoration(
+            color: Colors.black.withOpacity(0.05), // 로그창 배경을 살짝 어둡게
             borderRadius: BorderRadius.circular(10),
             border: Border.all(color: Colors.grey),
           ),
           padding: const EdgeInsets.all(8.0),
-          child: const Text("작업을 시작하면 로그가 여기에 표시됩니다."),
+          child: logList.isEmpty
+              ? const Center(child: Text("작업을 시작하면 로그가 여기에 표시됩니다."))
+              : ListView.builder(
+                  controller: scrollController,
+                  itemCount: logList.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2.0),
+                      child: Text(
+                        "> ${logList[index]}",
+                        style: const TextStyle(
+                          fontFamily: 'monospace', // 터미널 느낌의 폰트
+                          fontSize: 12,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    );
+                  },
+                ),
         ),
       ],
     );

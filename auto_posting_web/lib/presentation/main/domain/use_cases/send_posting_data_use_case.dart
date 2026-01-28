@@ -5,7 +5,8 @@ class SendPostingDataUseCase {
 
   SendPostingDataUseCase(this._repository);
 
-  Future<void> execute(Map<String, dynamic> data) async {
+  // [수정] void를 dynamic으로 바꿉니다.
+  Future<dynamic> execute(Map<String, dynamic> data) async {
     return await _repository.sendPostingData(data);
   }
 }
