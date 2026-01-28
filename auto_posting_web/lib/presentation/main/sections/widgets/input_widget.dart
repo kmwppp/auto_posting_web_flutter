@@ -19,6 +19,7 @@ class InputWidget extends StatelessWidget {
       decoration: BoxDecoration(
         border: BoxBorder.all(color: Colors.black),
         borderRadius: BorderRadius.circular(4),
+        color: Colors.white,
       ),
       alignment: Alignment.center,
       padding: EdgeInsets.symmetric(horizontal: 20),

@@ -43,6 +43,7 @@ class UserInfoRow extends ConsumerWidget {
                   decoration: BoxDecoration(
                     border: BoxBorder.all(color: Colors.black),
                     borderRadius: BorderRadius.circular(4),
+                    color: Colors.white,
                   ),
                   width: 74,
                   height: 30,
@@ -72,65 +73,65 @@ class UserInfoRow extends ConsumerWidget {
             ),
           ],
         ),
-        if (state.isProxySetting)
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 14),
-              Text(
-                "계정 프록시 설정",
-                style: context.bodyLarge.copyWith(fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 10),
-              Row(
-                children: [
-                  Text("아이디: ", style: context.bodyLarge),
-                  inputProxySet(
-                    user: user,
-                    context: context,
-                    controller: TextEditingController(text: user.proxy_id)
-                      ..selection = TextSelection.collapsed(
-                        offset: user.proxy_id.length,
-                      ),
-                    onChanged: (value) {
-                      notifier.updateProxyId(index: index, id: value);
-                    },
-                    width: 180,
-                  ),
+        // if (state.isProxySetting)
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 14),
+            Text(
+              "계정 프록시 설정",
+              style: context.bodyLarge.copyWith(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            Row(
+              children: [
+                Text("아이디: ", style: context.bodyLarge),
+                inputProxySet(
+                  user: user,
+                  context: context,
+                  controller: TextEditingController(text: user.proxy_id)
+                    ..selection = TextSelection.collapsed(
+                      offset: user.proxy_id.length,
+                    ),
+                  onChanged: (value) {
+                    notifier.updateProxyId(index: index, id: value);
+                  },
+                  width: 180,
+                ),
 
-                  SizedBox(width: 20),
+                SizedBox(width: 20),
 
-                  Text("비밀번호: ", style: context.bodyLarge),
-                  inputProxySet(
-                    user: user,
-                    context: context,
-                    controller: TextEditingController(text: user.proxy_pw)
-                      ..selection = TextSelection.collapsed(
-                        offset: user.proxy_pw.length,
-                      ),
-                    onChanged: (value) {
-                      notifier.updateProxyPw(index: index, pw: value);
-                    },
-                    width: 180,
-                  ),
-                  SizedBox(width: 20),
-                  Text("포트번호: ", style: context.bodyLarge),
-                  inputProxySet(
-                    user: user,
-                    context: context,
-                    controller: TextEditingController(text: user.port)
-                      ..selection = TextSelection.collapsed(
-                        offset: user.port.length,
-                      ),
-                    onChanged: (value) {
-                      notifier.updatePort(index: index, port: value);
-                    },
-                    width: 100,
-                  ),
-                ],
-              ),
-            ],
-          ),
+                Text("비밀번호: ", style: context.bodyLarge),
+                inputProxySet(
+                  user: user,
+                  context: context,
+                  controller: TextEditingController(text: user.proxy_pw)
+                    ..selection = TextSelection.collapsed(
+                      offset: user.proxy_pw.length,
+                    ),
+                  onChanged: (value) {
+                    notifier.updateProxyPw(index: index, pw: value);
+                  },
+                  width: 180,
+                ),
+                SizedBox(width: 20),
+                Text("포트번호: ", style: context.bodyLarge),
+                inputProxySet(
+                  user: user,
+                  context: context,
+                  controller: TextEditingController(text: user.port)
+                    ..selection = TextSelection.collapsed(
+                      offset: user.port.length,
+                    ),
+                  onChanged: (value) {
+                    notifier.updatePort(index: index, port: value);
+                  },
+                  width: 100,
+                ),
+              ],
+            ),
+          ],
+        ),
         SizedBox(height: 14),
         Divider(),
       ],
@@ -148,6 +149,7 @@ class UserInfoRow extends ConsumerWidget {
       decoration: BoxDecoration(
         border: BoxBorder.all(color: Colors.black),
         borderRadius: BorderRadius.circular(4),
+        color: Colors.white,
       ),
       width: width,
       height: 30,

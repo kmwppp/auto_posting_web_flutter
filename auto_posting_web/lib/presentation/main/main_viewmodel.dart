@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:auto_posting_web/data/model/blog_title_info_model.dart';
@@ -11,6 +12,7 @@ import 'main_state.dart';
 
 class MainViewModel extends Notifier<MainState> {
   String dialogMsg = "";
+  StreamSubscription<String>? _logSubscription;
 
   @override
   MainState build() {
@@ -271,16 +273,26 @@ class MainViewModel extends Notifier<MainState> {
     // 기존 로그 초기화
     state = state.copyWith(logList: []);
 
+    // 기존에 돌고 있는 구독이 있다면 먼저 닫아줍니다.
+    _logSubscription?.cancel();
+
     // 1. 유즈케이스 가져오기
     final subscribeUseCase = ref.read(subscribeLogUseCaseProvider);
 
     // 2. 스트림 구독 시작 (Base URL은 DataSource나 UseCase 내부에서 이미 처리되지만, 필요시 조합)
-    subscribeUseCase
+    // 1. 실행 결과를 변수에 할당
+    _logSubscription = subscribeUseCase
         .execute(userId)
         .listen(
           (newLog) {
+            // 2. 서버에서 보낸 "close" 이벤트 감지 (데이터 포맷에 따라 조건문 조정 필요)
+            if (newLog.contains("close") || newLog.contains("작업이 모두 완료되었습니다")) {
+              print("✅ 모든 작업 완료 신호 수신. 스트림을 닫습니다.");
+              _closeStream(); // 스트림 종료 함수 호출
+              return;
+            }
+
             if (newLog.isNotEmpty) {
-              // 리스트 업데이트 (불변성 유지)
               state = state.copyWith(logList: [...state.logList, newLog]);
             }
           },
@@ -290,7 +302,20 @@ class MainViewModel extends Notifier<MainState> {
               logList: [...state.logList, "연결 에러 발생: $error"],
             );
           },
+          onDone: () {
+            print("📡 서버에 의해 스트림이 완전히 닫혔습니다.");
+          },
         );
+  }
+
+  // 3. 스트림을 안전하게 닫는 함수
+  void _closeStream() {
+    _logSubscription?.cancel();
+    _logSubscription = null;
+    // 필요하다면 여기서 '완료' 상태를 state에 반영
+    state = state.copyWith(
+      logList: [...state.logList, "🏁 모든 포스팅 작업이 종료되었습니다."],
+    );
   }
 
   // 서버로 보낼 JSON 매핑 메소드

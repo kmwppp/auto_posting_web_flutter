@@ -17,16 +17,16 @@ class RunAndResultSection extends ConsumerWidget {
     MainState state,
   ) async {
     // 1-1. 프록시 미설정 시 컨펌 다이얼로그
-    if (!state.isProxySetting) {
-      final bool confirm =
-          await _showConfirmDialog(
-            context,
-            title: "주의",
-            content: "프록시를 설정하지 않고 진행하시겠습니까?",
-          ) ??
-          false;
-      if (!confirm) return;
-    }
+    // if (!state.isProxySetting) {
+    //   final bool confirm =
+    //       await _showConfirmDialog(
+    //         context,
+    //         title: "주의",
+    //         content: "프록시를 설정하지 않고 진행하시겠습니까?",
+    //       ) ??
+    //       false;
+    //   if (!confirm) return;
+    // }
 
     // 1-2. 데이터 유효성 검증
     final validation = notifier.isChkValidation();
@@ -123,7 +123,8 @@ class RunAndResultSection extends ConsumerWidget {
         const SizedBox(height: 6),
         Container(
           width: double.infinity,
-          height: 250, // 로그가 많아질 것을 대비해 높이를 조금 키웠습니다.
+          height: 250,
+          // 로그가 많아질 것을 대비해 높이를 조금 키웠습니다.
           decoration: BoxDecoration(
             color: Colors.black.withOpacity(0.05), // 로그창 배경을 살짝 어둡게
             borderRadius: BorderRadius.circular(10),

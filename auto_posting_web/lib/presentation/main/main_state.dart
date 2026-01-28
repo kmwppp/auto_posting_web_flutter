@@ -81,7 +81,7 @@ class MainState {
   factory MainState.initial() {
     return MainState(
       isLoading: false,
-      isProxySetting: false,
+      isProxySetting: true,
       userInfoList: [],
       distributionType: DistributionType.auto,
       postType: PostType.commercial,

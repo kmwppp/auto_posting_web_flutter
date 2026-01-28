@@ -58,33 +58,33 @@ class InsertProxy extends ConsumerWidget {
             ),
 
             // 2. Switch 위젯 배치
-            Switch(
-              value: isProxySetting,
-              activeColor: Colors.blueAccent, // 켜졌을 때 색상
-              onChanged: (value) {
-                // 3. 상태 변경 요청
-                notifier.changeIsProxySetting(value);
-              },
-            ),
+            // Switch(
+            //   value: isProxySetting,
+            //   activeColor: Colors.blueAccent, // 켜졌을 때 색상
+            //   onChanged: (value) {
+            //     // 3. 상태 변경 요청
+            //     notifier.changeIsProxySetting(value);
+            //   },
+            // ),
           ],
         ),
 
-        if (isProxySetting)
-          Column(
-            spacing: 8,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(height: 8),
-              Text(
-                "구매하신 프록시의 IP를 입력하세요.",
-                style: context.body.copyWith(color: Colors.grey),
-              ),
-              InputWidget(
-                inputHint: "프록시 IP을 입력하세요.",
-                controller: proxyController,
-              ),
-            ],
-          ),
+        // if (isProxySetting)
+        Column(
+          spacing: 8,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 8),
+            Text(
+              "구매하신 프록시의 IP를 입력하세요.",
+              style: context.body.copyWith(color: Colors.grey),
+            ),
+            InputWidget(
+              inputHint: "프록시 IP을 입력하세요.",
+              controller: proxyController,
+            ),
+          ],
+        ),
       ],
     );
   }
