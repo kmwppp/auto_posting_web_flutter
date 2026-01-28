@@ -23,7 +23,7 @@ class MainRemoteDataSource {
   Stream<String> subscribeLogStream(String userId) {
     return SSEClient.subscribeToSSE(
       method: SSERequestType.GET,
-      url: 'http://52.62.79.242/api/blog/$userId',
+      url: 'http://52.62.79.242/api/blog/stream/$userId',
       header: {"Accept": "text/event-stream"},
     ).map((event) => event.data ?? "");
   }
