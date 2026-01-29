@@ -17,8 +17,9 @@ class LoginButtonSection extends ConsumerWidget {
       spacing: 10,
       children: [
         GestureDetector(
-          onTap: () {
-            if (notifier.isLoginValid()) {
+          onTap: () async {
+            final logined = await notifier.sendToServer();
+            if (logined) {
               // 이제 context 에러(ProviderNotFoundException)에서 완전히 해방됩니다.
               ref.read(authStateProvider).login();
             } else {
@@ -26,7 +27,7 @@ class LoginButtonSection extends ConsumerWidget {
                 context: context,
                 builder: (context) => AlertDialog(
                   title: const Text("로그인"),
-                  content: Text("로그인 정보가 없습니다."),
+                  content: Text("로그인 정보를 확인해주세요."),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
