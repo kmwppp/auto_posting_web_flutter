@@ -1,5 +1,6 @@
 class MainUserInfoModel {
   final bool isPostingCheck;
+  final String currentUserId;
   final String userId;
   final String userPassword;
   final int postingCount;
@@ -8,6 +9,7 @@ class MainUserInfoModel {
   final String port;
 
   const MainUserInfoModel({
+    required this.currentUserId,
     required this.userId,
     required this.userPassword,
     required this.postingCount,
@@ -19,6 +21,7 @@ class MainUserInfoModel {
 
   MainUserInfoModel copyWith({
     bool? isPostingCheck,
+    String? currentUserId,
     String? userId,
     String? userPassword,
     int? postingCount,
@@ -27,6 +30,7 @@ class MainUserInfoModel {
     String? port,
   }) {
     return MainUserInfoModel(
+      currentUserId: currentUserId ?? this.currentUserId,
       userId: userId ?? this.userId,
       userPassword: userPassword ?? this.userPassword,
       postingCount: postingCount ?? this.postingCount,
@@ -38,7 +42,7 @@ class MainUserInfoModel {
   }
 
   Map<String, dynamic> toJson() => {
-    "current_user_id": "1", // 지금은 쓸일 없는데 다음을위해 일단 넣어둠
+    "current_user_id": currentUserId, // 지금은 쓸일 없는데 다음을위해 일단 넣어둠
     "site_name": "Naver", // 지금은 쓸일 없는데 다음을위해 일단 넣어둠
     "external_id": userId,
     "external_pw": userPassword,

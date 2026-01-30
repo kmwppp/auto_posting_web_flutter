@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/legacy.dart';
 
 class AuthProvider extends ChangeNotifier {
   bool _isLoggedIn = false;
+  int? userCurrentId;
 
   bool get isLoggedIn => _isLoggedIn;
 
@@ -15,8 +16,9 @@ class AuthProvider extends ChangeNotifier {
   }
 
   // 로그인 성공 시 호출
-  void login() {
+  void login({required int userCurrentId}) {
     _isLoggedIn = true;
+    this.userCurrentId = userCurrentId;
     notifyListeners(); // 중요: 이걸 호출해야 라우터가 반응함
   }
 

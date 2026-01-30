@@ -43,7 +43,7 @@ class RegisterState {
       userId: '',
       userPassword: '',
       userPasswordConfirm: '',
-      isSamePassword: false,
+      isSamePassword: true,
       userName: '',
       phoneNumber: '',
       isLoading: false,

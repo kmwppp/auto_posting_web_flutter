@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:auto_posting_web/core/di/provider_container.dart';
+import 'package:auto_posting_web/presentation/login/data/model/login_return_model.dart';
 import 'package:auto_posting_web/presentation/login/login_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart' hide Provider;
 
@@ -31,10 +32,28 @@ class LoginViewModel extends Notifier<LoginState> {
   }
 
   // 서버로 보낼 JSON 매핑 메소드
-  Future<bool> sendToServer() async {
+  Future<LoginReturnModel> sendToServer() async {
     state = state.copyWith(isLoading: true);
     final user_id = state.userId;
     final password = state.userPassword;
+
+    if (user_id == "") {
+      state = state.copyWith(isLoading: false);
+      return LoginReturnModel(
+        msg: "아이디를 입력해주세요.",
+        errorCode: 5,
+        userCurrentId: 0,
+      );
+    }
+
+    if (password == "") {
+      state = state.copyWith(isLoading: false);
+      return LoginReturnModel(
+        msg: "비밀번호를 입력해주세요.",
+        errorCode: 5,
+        userCurrentId: 0,
+      );
+    }
 
     final Map<String, dynamic> requestData = {
       "user_id": user_id,
@@ -53,26 +72,62 @@ class LoginViewModel extends Notifier<LoginState> {
       } else {
         response = Map<String, dynamic>.from(result);
       }
-
+      state = state.copyWith(isLoading: false);
       if (response['status'] == 'success') {
         print("✅ 로그인 성공: ${response['message']}");
-        state = state.copyWith(isLoading: false);
-        return true;
+        // 1. 서버 응답에서 ID 추출
+        final rawId = response['user_id'];
+        // 2. int로 변환 (안전하게 tryParse 사용)
+        final int userCurrentId = int.tryParse(rawId.toString()) ?? 0;
+        return LoginReturnModel(
+          msg: "로그인에 성공하였습니다.",
+          errorCode: 0,
+          userCurrentId: userCurrentId,
+        );
+      } else {
+        // fail / error 인 경우 error code를 보고 리턴
+        // 등록된 계정이 없는 경우
+        final errorCode = response['error_code'];
+        switch (errorCode) {
+          case '01':
+            return LoginReturnModel(
+              msg: "등록된 계정이 없습니다.",
+              errorCode: 1,
+              userCurrentId: 0,
+            );
+          case '02':
+            return LoginReturnModel(
+              msg: "아이디 또는 비밀번호가 일치하지 않습니다.",
+              errorCode: 2,
+              userCurrentId: 0,
+            );
+          case '03':
+            return LoginReturnModel(
+              msg: "해당 계정은 가입 승인 대기중입니다.",
+              errorCode: 3,
+              userCurrentId: 0,
+            );
+          case '04':
+            return LoginReturnModel(
+              msg: "해당 계정은 사용 정지중입니다.",
+              errorCode: 4,
+              userCurrentId: 0,
+            );
+        }
+        return LoginReturnModel(
+          msg: "등록된 계정이 없습니다.",
+          errorCode: 1,
+          userCurrentId: 0,
+        );
       }
     } on Exception catch (e) {
-      // 3. 로그인 실패 처리 (서버에서 401, 404, 500 등을 던진 경우)
       print("❌ 로그인 실패: $e");
-
-      // 사용자에게 보여줄 에러 메시지 처리
-      String errorMessage = "로그인 중 오류가 발생했습니다.";
-
-      if (e.toString().contains('401')) {
-        errorMessage = "아이디 또는 비밀번호가 일치하지 않습니다.";
-        state = state.copyWith(isLoading: false);
-        return false;
-      }
+      state = state.copyWith(isLoading: false);
+      return LoginReturnModel(
+        msg: "알 수 없는 오류가 발생하였습니다.",
+        errorCode: 5,
+        userCurrentId: 0,
+      );
     }
-    state = state.copyWith(isLoading: false);
-    return false;
   }
 }

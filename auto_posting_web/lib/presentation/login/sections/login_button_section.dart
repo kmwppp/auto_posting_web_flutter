@@ -18,25 +18,28 @@ class LoginButtonSection extends ConsumerWidget {
       children: [
         GestureDetector(
           onTap: () async {
-            final logined = await notifier.sendToServer();
-            if (logined) {
-              // 이제 context 에러(ProviderNotFoundException)에서 완전히 해방됩니다.
-              ref.read(authStateProvider).login();
-            } else {
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text("로그인"),
-                  content: Text("로그인 정보를 확인해주세요."),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(context),
-                      child: const Text("확인"),
-                    ),
-                  ],
-                ),
-              );
-            }
+            final response = await notifier.sendToServer();
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text("로그인"),
+                content: Text(response.msg),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      if (response.errorCode == 0) {
+                        ref
+                            .read(authStateProvider)
+                            .login(userCurrentId: response.userCurrentId);
+                      } else {
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: const Text("확인"),
+                  ),
+                ],
+              ),
+            );
           },
           child: Container(
             decoration: BoxDecoration(

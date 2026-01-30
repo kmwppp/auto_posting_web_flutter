@@ -20,10 +20,17 @@ class MainViewModel extends Notifier<MainState> {
   }
 
   /// 블로그를 쓰기위한 계정 추가 로직
-  void addUserInfo({required String userId, required String userPassword}) {
+  void addUserInfo({
+    required int? currentUserId,
+    required String userId,
+    required String userPassword,
+  }) {
+    String current = currentUserId?.toString() ?? "";
+    print("currentId: $current");
     if (_isNullVaildChk(str1: userId, str2: userPassword)) {
       List<MainUserInfoModel> list = state.userInfoList;
       MainUserInfoModel model = MainUserInfoModel(
+        currentUserId: current,
         userId: userId,
         userPassword: userPassword,
         postingCount: state.distributionType == DistributionType.auto ? 5 : 0,

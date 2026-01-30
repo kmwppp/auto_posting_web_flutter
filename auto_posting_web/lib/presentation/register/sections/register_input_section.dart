@@ -30,6 +30,7 @@ class RegisterInputSection extends ConsumerWidget {
           onChanged: (value) {
             notifier.changeUserPassword(value);
           },
+          isObscure: true,
         ),
         SizedBox(height: 6),
         LoginInputWidget(
@@ -38,6 +39,7 @@ class RegisterInputSection extends ConsumerWidget {
           onChanged: (value) {
             notifier.changeUserPasswordConfirm(value);
           },
+          isObscure: true,
         ),
         if (!state.isSamePassword)
           Text(

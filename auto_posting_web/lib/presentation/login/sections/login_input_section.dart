@@ -27,6 +27,7 @@ class LoginInputSection extends ConsumerWidget {
           onChanged: (value) {
             notifier.changeUserPassword(value);
           },
+          isObscure: true,
         ),
       ],
     );

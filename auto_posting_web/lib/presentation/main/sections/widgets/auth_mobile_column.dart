@@ -1,3 +1,4 @@
+import 'package:auto_posting_web/routes/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -9,6 +10,8 @@ class AuthMobileColumn extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authStateProvider);
+    final currentUserId = authState.userCurrentId;
     final idController = ref.watch(idControllerProvider);
     final pwController = ref.watch(pwControllerProvider);
     final notifier = ref.read(mainViewModelProvider.notifier);
@@ -23,6 +26,7 @@ class AuthMobileColumn extends ConsumerWidget {
             notifier.addUserInfo(
               userId: idController.text,
               userPassword: pwController.text,
+              currentUserId: currentUserId,
             );
           },
           child: Container(

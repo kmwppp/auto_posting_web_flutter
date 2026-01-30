@@ -8,10 +8,12 @@ class LoginInputWidget extends StatelessWidget {
     required this.inputTitle,
     required this.inputHint,
     required this.onChanged,
+    this.isObscure = false,
   });
 
   final String inputTitle;
   final String inputHint;
+  final bool isObscure;
 
   //실무기준으로 onChange를 받는다
   final ValueChanged<String> onChanged;
@@ -41,6 +43,7 @@ class LoginInputWidget extends StatelessWidget {
         alignment: Alignment.center,
         padding: EdgeInsets.symmetric(horizontal: 20),
         child: TextField(
+          obscureText: isObscure,
           onChanged: (value) {
             onChanged(value);
           },
