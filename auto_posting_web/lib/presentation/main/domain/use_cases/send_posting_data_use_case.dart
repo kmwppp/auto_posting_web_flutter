@@ -9,4 +9,8 @@ class SendPostingDataUseCase {
   Future<dynamic> execute(Map<String, dynamic> data) async {
     return await _repository.sendPostingData(data);
   }
+
+  Future<dynamic> executeIsWorking(String userId) async {
+    return await _repository.sendIsWorking(userId);
+  }
 }

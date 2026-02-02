@@ -16,18 +16,6 @@ class RunAndResultSection extends ConsumerWidget {
     MainViewModel notifier,
     MainState state,
   ) async {
-    // 1-1. 프록시 미설정 시 컨펌 다이얼로그
-    // if (!state.isProxySetting) {
-    //   final bool confirm =
-    //       await _showConfirmDialog(
-    //         context,
-    //         title: "주의",
-    //         content: "프록시를 설정하지 않고 진행하시겠습니까?",
-    //       ) ??
-    //       false;
-    //   if (!confirm) return;
-    // }
-
     // 1-2. 데이터 유효성 검증
     final validation = notifier.isChkValidation();
     if (!validation.isValid) {
@@ -36,7 +24,8 @@ class RunAndResultSection extends ConsumerWidget {
     }
 
     // 1-3. 최종 서버 전송
-    await notifier.sendToServer();
+    final response = await notifier.sendToServer();
+    await _showAlertDialog(context, message: response.msg);
   }
 
   @override

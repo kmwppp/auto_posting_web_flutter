@@ -6,6 +6,7 @@ import 'package:auto_posting_web/data/model/main_user_info_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/di/provider_container.dart';
+import 'data/model/main_return_model.dart';
 import 'main_enums.dart';
 import 'main_provider.dart';
 import 'main_state.dart';
@@ -276,22 +277,27 @@ class MainViewModel extends Notifier<MainState> {
   }
 
   // [수정] 로그 수신 전용 메서드
-  void _listenToLogs(String userId) {
+  void _listenToLogs(String streamUrl) {
+    print("🚀 [SSE] _listenToLogs 시작됨 - 전달받은 URL: $streamUrl");
     // 기존 로그 초기화
     state = state.copyWith(logList: []);
 
-    // 기존에 돌고 있는 구독이 있다면 먼저 닫아줍니다.
-    _logSubscription?.cancel();
+    // 기존 구독 취소 확인
+    if (_logSubscription != null) {
+      print("🔄 [SSE] 기존 구독이 존재하여 취소합니다.");
+      _logSubscription?.cancel();
+    }
 
     // 1. 유즈케이스 가져오기
     final subscribeUseCase = ref.read(subscribeLogUseCaseProvider);
-
+    print("📡 [SSE] 스트림 구독(listen) 시도 중...");
     // 2. 스트림 구독 시작 (Base URL은 DataSource나 UseCase 내부에서 이미 처리되지만, 필요시 조합)
     // 1. 실행 결과를 변수에 할당
     _logSubscription = subscribeUseCase
-        .execute(userId)
+        .execute(streamUrl)
         .listen(
           (newLog) {
+            print("📩 [SSE 수신 데이터]: $newLog");
             // 2. 서버에서 보낸 "close" 이벤트 감지 (데이터 포맷에 따라 조건문 조정 필요)
             if (newLog.contains("close") || newLog.contains("작업이 모두 완료되었습니다")) {
               print("✅ 모든 작업 완료 신호 수신. 스트림을 닫습니다.");
@@ -317,6 +323,7 @@ class MainViewModel extends Notifier<MainState> {
 
   // 3. 스트림을 안전하게 닫는 함수
   void _closeStream() {
+    print("🔌 [SSE] _closeStream() 호출됨");
     _logSubscription?.cancel();
     _logSubscription = null;
     // 필요하다면 여기서 '완료' 상태를 state에 반영
@@ -325,19 +332,67 @@ class MainViewModel extends Notifier<MainState> {
     );
   }
 
+  Future<bool> postIsWorking(String userId) async {
+    print("🔍 [StatusCheck] 유저 $userId 의 작업 상태 확인 시작");
+    try {
+      final useCase = ref.read(sendPostingDataUseCaseProvider);
+      final result = await useCase.executeIsWorking(userId);
+
+      print("📥 [StatusCheck] 서버 원본 응답: $result");
+
+      dynamic decodedResult = result;
+      if (result is String) {
+        decodedResult = jsonDecode(result);
+      }
+
+      final response = Map<String, dynamic>.from(decodedResult);
+      final String status = response['status'] ?? 'error';
+      final String streamUrl = response['streamUrl'] ?? '';
+
+      print("📊 [StatusCheck] 파싱 결과 - Status: $status, StreamUrl: $streamUrl");
+
+      if (status == "working") {
+        // 1. 로그 리스트에 안내 문구 추가
+        state = state.copyWith(
+          logList: [...state.logList, "⏳ 기존 작업이 진행 중입니다. 연결을 시도합니다..."],
+        );
+
+        // 2. [추가] 뷰에서 감지할 수 있도록 다이얼로그 메세지 설정
+        // 만약 state에 dialogMsg나 alertMsg가 있다면 설정
+        this.dialogMsg = "진행 중인 포스팅 작업이 확인되었습니다.\n실시간 로그를 연결합니다.";
+
+        // 3. SSE 연결
+        if (streamUrl.isNotEmpty) {
+          _listenToLogs(streamUrl);
+        } else {
+          print("🚨 [StatusCheck] status는 working인데 streamUrl이 비어있음!");
+        }
+
+        // 4. 리턴값을 주어 UI에서 다이얼로그를 띄우게 함
+        return true; //작업중
+      }
+    } catch (e) {
+      print("💥 [StatusCheck] 예외 발생: $e");
+      // [예외 - 네트워크 등] errorCode: 2
+      final errorMsg = "통신 실패: $e";
+      state = state.copyWith(logList: [...state.logList, "❌ $errorMsg"]);
+    }
+
+    return false;
+  }
+
   // 서버로 보낼 JSON 매핑 메소드
   // [수정] 서버로 보낼 JSON 매핑 메소드
-  Future<void> sendToServer() async {
+  Future<MainReturnModel> sendToServer() async {
     state = state.copyWith(isLoading: true);
 
-    // 1. 컨트롤러들로부터 값 추출 (기존과 동일)
+    // 1. 데이터 준비 (생략되지 않도록 유지)
     final proxyUrl = ref.read(proxyUrlControllerProvider).text;
     final siteUrl = ref.read(wordpressURLControllerProvider).text;
     final aiWriteRole = ref.read(aiwriteOrderControllerProvider).text;
     final postingTerm =
         int.tryParse(ref.read(postingCycleControllerProvider).text) ?? 0;
 
-    // 2. JSON 데이터 구성 (기존과 동일)
     final Map<String, dynamic> requestData = {
       "proxy": proxyUrl,
       "proxyUse": state.isProxySetting,
@@ -355,49 +410,46 @@ class MainViewModel extends Notifier<MainState> {
       final useCase = ref.read(sendPostingDataUseCaseProvider);
       final result = await useCase.execute(requestData);
 
-      // [디버깅 추가] 서버가 준 데이터의 '진짜 타입'을 로그창에 찍어보세요.
-      print("DEBUG: 서버 응답 타입: ${result.runtimeType}");
-      print("DEBUG: 서버 응답 실제 내용: $result");
-
-      // 만약 String으로 들어온다면 JSON으로 변환해주는 로직 추가
-      dynamic finalResult = result;
+      // JSON 파싱
+      dynamic decodedResult = result;
       if (result is String) {
-        finalResult = jsonDecode(result);
+        decodedResult = jsonDecode(result);
       }
 
-      // 1. finalResult로 체크
-      if (finalResult == null || finalResult is! Map) {
+      final response = Map<String, dynamic>.from(decodedResult);
+      final String status = response['status'] ?? 'error';
+      final String serverMessage = response['message'] ?? '알 수 없는 응답';
+      final String streamUrl = response['streamUrl']?.toString() ?? "";
+
+      // --- 상황별 리턴 처리 ---
+
+      if (status == 'success') {
+        // [성공] errorCode: 0
+        state = state.copyWith(logList: [...state.logList, "✅ $serverMessage"]);
+        if (streamUrl.isNotEmpty) _listenToLogs(streamUrl);
+
+        return MainReturnModel(msg: serverMessage, errorCode: 0);
+      } else if (status == 'fail') {
+        // [실패 - 중복 작업] errorCode: 1
         state = state.copyWith(
-          logList: [...state.logList, "서버 데이터 형식 오류 (${result.runtimeType})"],
+          logList: [...state.logList, "⚠️ $serverMessage"],
         );
-        return;
-      }
 
-      // 2. 변환
-      final response = Map<String, dynamic>.from(finalResult);
-
-      // 3. 'status' 키가 존재하는지 확인 후 처리
-      if (response['status'] == 'success') {
-        print("서버 전송 성공");
-
-        final String userIdFromRoot =
-            response['currentUserId']?.toString() ?? "";
-
-        if (userIdFromRoot.isNotEmpty) {
-          _listenToLogs(userIdFromRoot);
-        } else {
-          state = state.copyWith(
-            logList: [...state.logList, "서버 응답에 사용자 ID가 없습니다."],
-          );
-        }
+        return MainReturnModel(msg: serverMessage, errorCode: 1);
       } else {
-        final errorMsg = response['message'] ?? "알 수 없는 에러";
-        print("서버 응답 오류: $errorMsg");
-        state = state.copyWith(logList: [...state.logList, "서버 오류: $errorMsg"]);
+        // [에러 - 서버 내부 오류] errorCode: 2
+        state = state.copyWith(
+          logList: [...state.logList, "🚨 $serverMessage"],
+        );
+
+        return MainReturnModel(msg: serverMessage, errorCode: 2);
       }
     } catch (e) {
-      print("통신 실패 상세: $e");
-      state = state.copyWith(logList: [...state.logList, "통신 실패: $e"]);
+      // [예외 - 네트워크 등] errorCode: 2
+      final errorMsg = "통신 실패: $e";
+      state = state.copyWith(logList: [...state.logList, "❌ $errorMsg"]);
+
+      return MainReturnModel(msg: errorMsg, errorCode: 2);
     } finally {
       state = state.copyWith(isLoading: false);
     }

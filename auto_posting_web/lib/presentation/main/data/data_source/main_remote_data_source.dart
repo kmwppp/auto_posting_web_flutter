@@ -20,10 +20,18 @@ class MainRemoteDataSource {
     return response.data;
   }
 
-  Stream<String> subscribeLogStream(String userId) {
+  Future<dynamic> postIsWorking(String userId) async {
+    // URL을 직접 합쳐서 보냅니다.
+    // 결과: http://52.62.79.242/api/blog/posting
+    final response = await _dio.post('$MAIN_SERVER/api/blog/status/$userId');
+    return response.data;
+  }
+
+  Stream<String> subscribeLogStream(String streamUrl) {
+    print("$MAIN_SERVER$streamUrl");
     return SSEClient.subscribeToSSE(
       method: SSERequestType.GET,
-      url: '$MAIN_SERVER/api/blog/stream/$userId',
+      url: '$MAIN_SERVER$streamUrl',
       header: {"Accept": "text/event-stream"},
     ).map((event) => event.data ?? "");
   }

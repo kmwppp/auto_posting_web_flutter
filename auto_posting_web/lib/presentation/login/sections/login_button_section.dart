@@ -18,27 +18,29 @@ class LoginButtonSection extends ConsumerWidget {
       children: [
         GestureDetector(
           onTap: () async {
+            // ref.read(authStateProvider).login(userCurrentId: 1);
             final response = await notifier.sendToServer();
             showDialog(
               context: context,
-              builder: (context) => AlertDialog(
-                title: const Text("로그인"),
-                content: Text(response.msg),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      if (response.errorCode == 0) {
-                        ref
-                            .read(authStateProvider)
-                            .login(userCurrentId: response.userCurrentId);
-                      } else {
-                        Navigator.pop(context);
-                      }
-                    },
-                    child: const Text("확인"),
+              builder: (context) =>
+                  AlertDialog(
+                    title: const Text("로그인"),
+                    content: Text(response.msg),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          if (response.errorCode == 0) {
+                            ref
+                                .read(authStateProvider)
+                                .login(userCurrentId: response.userCurrentId);
+                          } else {
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: const Text("확인"),
+                      ),
+                    ],
                   ),
-                ],
-              ),
             );
           },
           child: Container(
@@ -51,18 +53,18 @@ class LoginButtonSection extends ConsumerWidget {
             alignment: Alignment.center,
             child: state.isLoading
                 ? SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    ),
-                  )
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                color: Colors.white,
+                strokeWidth: 2,
+              ),
+            )
                 : Text(
-                    "로그인",
-                    textAlign: TextAlign.center,
-                    style: context.bodyLarge.copyWith(color: Colors.white),
-                  ),
+              "로그인",
+              textAlign: TextAlign.center,
+              style: context.bodyLarge.copyWith(color: Colors.white),
+            ),
           ),
         ),
 

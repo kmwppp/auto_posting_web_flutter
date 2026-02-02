@@ -16,4 +16,9 @@ class MainRepositoryImpl implements MainRepository {
   Stream<String> getLogStream(String userId) {
     return _dataSource.subscribeLogStream(userId); // 스트림 연결
   }
+
+  @override
+  Future<dynamic> sendIsWorking(String userId) async {
+    return await _dataSource.postIsWorking(userId);
+  }
 }
