@@ -1,6 +1,10 @@
 enum DistributionType { auto, manual }
 
+enum MainBlogType { wordPress, blogSpot }
+
 enum PostType { commercial, informative }
+
+enum PostTitleType { keyword, url }
 
 enum CreatePostType { title, url }
 

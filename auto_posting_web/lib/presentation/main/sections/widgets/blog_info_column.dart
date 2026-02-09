@@ -1,4 +1,5 @@
 import 'package:auto_posting_web/core/theme/app_text_styles.dart';
+import 'package:auto_posting_web/presentation/main/main_enums.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -10,6 +11,7 @@ class BlogInfoColumn extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(mainViewModelProvider);
     final mainKeyController = ref.watch(mainKeyWordControllerProvider);
     final blogTitleController = ref.watch(blogTitleControllerProvider);
     final notifier = ref.read(mainViewModelProvider.notifier);
@@ -17,13 +19,23 @@ class BlogInfoColumn extends ConsumerWidget {
     return Column(
       spacing: 10,
       children: [
-        InputWidget(inputHint: "메인 키워드", controller: mainKeyController),
-        InputWidget(inputHint: "블로그 제목", controller: blogTitleController),
+        InputWidget(
+          inputHint: state.postTitleType == PostTitleType.keyword
+              ? "메인 키워드"
+              : "블로그 제목",
+          controller: mainKeyController,
+        ),
+        InputWidget(
+          inputHint: state.postTitleType == PostTitleType.keyword
+              ? "블로그 제목"
+              : "URL",
+          controller: blogTitleController,
+        ),
         GestureDetector(
           onTap: () {
             notifier.addBlogInfoSingle(
-              mainKeyword: mainKeyController.text,
-              postingTitle: blogTitleController.text,
+              first: mainKeyController.text,
+              second: blogTitleController.text,
             );
           },
           child: Container(

@@ -13,6 +13,9 @@ class PostTypeAndContentsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final mainBlogType = ref.watch(
+      mainViewModelProvider.select((s) => s.mainBlogType),
+    );
     final postType = ref.watch(mainViewModelProvider.select((s) => s.postType));
     final notifier = ref.read(mainViewModelProvider.notifier);
     return SizedBox(
@@ -22,13 +25,19 @@ class PostTypeAndContentsSection extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            CommonRadioGroup<MainBlogType>(
+              groupValue: mainBlogType,
+              items: [
+                CommonRadioItem(label: '워드프레스', value: MainBlogType.wordPress),
+                CommonRadioItem(label: '블로그 스팟', value: MainBlogType.blogSpot),
+              ],
+              onChanged: (value) => notifier.changeMainBlogType(value),
+            ),
+            Divider(),
             CommonRadioGroup<PostType>(
               groupValue: postType,
               items: [
-                CommonRadioItem(
-                  label: '상업성 글 (워드프레스 연동)',
-                  value: PostType.commercial,
-                ),
+                CommonRadioItem(label: '상업성 글', value: PostType.commercial),
                 // CommonRadioItem(
                 //   label: '정보성 글 (링크 없음)',
                 //   value: PostType.informative,

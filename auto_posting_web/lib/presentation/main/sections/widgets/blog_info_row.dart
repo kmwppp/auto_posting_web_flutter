@@ -1,3 +1,4 @@
+import 'package:auto_posting_web/presentation/main/main_enums.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -9,6 +10,7 @@ class BlogInfoRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(mainViewModelProvider);
     final mainKeyController = ref.watch(mainKeyWordControllerProvider);
     final blogTitleController = ref.watch(blogTitleControllerProvider);
     final notifier = ref.read(mainViewModelProvider.notifier);
@@ -21,7 +23,9 @@ class BlogInfoRow extends ConsumerWidget {
             Expanded(
               child: _input(
                 context: context,
-                inputHint: "메인 키워드",
+                inputHint: state.postTitleType == PostTitleType.keyword
+                    ? "메인 키워드"
+                    : "블로그 제목",
                 controller: mainKeyController,
                 align: Alignment.topLeft,
                 boxHeight: 300,
@@ -30,7 +34,9 @@ class BlogInfoRow extends ConsumerWidget {
             Expanded(
               child: _input(
                 context: context,
-                inputHint: "블로그 제목",
+                inputHint: state.postTitleType == PostTitleType.keyword
+                    ? "블로그 제목"
+                    : "URL",
                 controller: blogTitleController,
                 align: Alignment.topLeft,
                 boxHeight: 300,
@@ -42,8 +48,8 @@ class BlogInfoRow extends ConsumerWidget {
         GestureDetector(
           onTap: () {
             notifier.addBlogInfoMulti(
-              mainKeyword: mainKeyController.text,
-              postingTitle: blogTitleController.text,
+              first: mainKeyController.text,
+              second: blogTitleController.text,
             );
           },
           child: Container(

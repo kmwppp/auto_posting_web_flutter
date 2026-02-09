@@ -62,6 +62,11 @@ class RunAndResultSection extends ConsumerWidget {
       onTap: state.isLoading
           ? null
           : () => _handleStartPosting(context, ref, notifier, state),
+      // onTap: () {
+      //   print(state.postTitleType);
+      //   print("state.titleKeywordList: ${state.titleKeywordList}");
+      //   print("state.titleUrlList: ${state.titleUrlList}");
+      // },
       child: Container(
         height: 50,
         decoration: BoxDecoration(

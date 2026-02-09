@@ -6,6 +6,8 @@ import 'package:auto_posting_web/data/model/main_user_info_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/di/provider_container.dart';
+import '../../data/model/blog_credential_model.dart';
+import '../../data/model/blog_title_url_info_model.dart';
 import 'data/model/main_return_model.dart';
 import 'main_enums.dart';
 import 'main_provider.dart';
@@ -21,31 +23,44 @@ class MainViewModel extends Notifier<MainState> {
   }
 
   /// 블로그를 쓰기위한 계정 추가 로직
-  void addUserInfo({
+  int addUserInfo({
     required int? currentUserId,
     required String userId,
     required String userPassword,
   }) {
     String current = currentUserId?.toString() ?? "";
-    print("currentId: $current");
-    if (_isNullVaildChk(str1: userId, str2: userPassword)) {
-      List<MainUserInfoModel> list = state.userInfoList;
-      MainUserInfoModel model = MainUserInfoModel(
-        currentUserId: current,
-        userId: userId,
-        userPassword: userPassword,
-        postingCount: state.distributionType == DistributionType.auto ? 5 : 0,
-        isPostingCheck: false,
-        proxy_id: '',
-        proxy_pw: '',
-        port: '',
-      );
-      list.add(model);
 
-      state = state.copyWith(userInfoList: list);
+    // 1. 기본 유효성 검사 (아이디/비번이 비어있으면 실패)
+    if (!_isNullVaildChk(str1: userId, str2: userPassword)) {
+      return 1;
     }
 
-    print("state.userInfoList: ${state.userInfoList.length}");
+    // 2. 중복 체크 로직
+    // 이미 리스트에 동일한 userId가 있는지 확인
+    bool isDuplicate = state.userInfoList.any((user) => user.userId == userId);
+
+    if (isDuplicate) {
+      print("⚠️ 중복 아이디 발견: $userId");
+      return 2; // 중복이므로 추가하지 않고 false 반환
+    }
+
+    // 3. 리스트 추가 로직 (불변성 유지)
+    MainUserInfoModel model = MainUserInfoModel(
+      currentUserId: current,
+      userId: userId,
+      userPassword: userPassword,
+      postingCount: state.distributionType == DistributionType.auto ? 5 : 0,
+      isPostingCheck: false,
+      proxy_id: '',
+      proxy_pw: '',
+      port: '',
+    );
+
+    // 새로운 리스트를 만들어 상태 업데이트
+    state = state.copyWith(userInfoList: [...state.userInfoList, model]);
+
+    print("✅ 계정 추가 성공: $userId");
+    return 0; // 성공적으로 추가됨
   }
 
   void updateProxyId({required int index, required String id}) {
@@ -84,68 +99,129 @@ class MainViewModel extends Notifier<MainState> {
     state = state.copyWith(userInfoList: newList);
   }
 
-  void removeUserInfo({required int index}) {
-    final newList = [...state.userInfoList];
-    newList.removeAt(index);
-    state = state.copyWith(userInfoList: newList);
-  }
+  /// 계정 삭제 로직 (서버 삭제 + 로컬 리스트 갱신)
+  Future<bool> removeUserInfo({
+    required int index,
+    required int ownerId,
+  }) async {
+    // 1. 현재 인덱스의 유저 정보 가져오기
+    final targetUser = state.userInfoList[index];
+    final String loginId = targetUser.userId; // MainUserInfoModel의 계정 ID 필드
 
-  void addBlogInfoSingle({
-    required String mainKeyword,
-    required String postingTitle,
-  }) {
-    if (_isNullVaildChk(str1: mainKeyword, str2: postingTitle)) {
-      final list = [...state.titleList];
-      BlogTitleInfoModel model = BlogTitleInfoModel(
-        main_keyword: mainKeyword,
-        posting_title: postingTitle,
-      );
-      list.add(model);
+    try {
+      state = state.copyWith(isLoading: true);
 
-      state = state.copyWith(titleList: list);
+      // 2. 서버 삭제 UseCase 호출
+      final deleteUseCase = ref.read(deleteCredentialUseCaseProvider);
+      await deleteUseCase.execute(ownerId: ownerId, loginId: loginId);
+
+      final newList = [...state.userInfoList];
+      newList.removeAt(index);
+      state = state.copyWith(userInfoList: newList);
+      return true;
+    } catch (e) {
+      print("❌ 계정 삭제 중 오류 발생: $e");
+      return false;
+    } finally {
+      state = state.copyWith(isLoading: false);
     }
   }
 
-  void addBlogInfoMulti({
-    required String mainKeyword,
-    required String postingTitle,
-  }) {
-    final keywords = mainKeyword
-        .split('\n')
-        .where((s) => s.trim().isNotEmpty)
-        .toList();
-    final titles = postingTitle
-        .split('\n')
-        .where((s) => s.trim().isNotEmpty)
-        .toList();
+  void addBlogInfoSingle({required String first, required String second}) {
+    if (_isNullVaildChk(str1: first, str2: second)) {
+      if (state.postTitleType == PostTitleType.keyword) {
+        final list = [...state.titleKeywordList];
+        BlogTitleInfoModel model = BlogTitleInfoModel(
+          main_keyword: first,
+          posting_title: second,
+        );
+        list.add(model);
 
-    final list = [...state.titleList];
+        state = state.copyWith(titleKeywordList: list);
+      } else {
+        final list = [...state.titleUrlList];
+        BlogTitleUrlInfoModel model = BlogTitleUrlInfoModel(
+          posting_title: first,
+          url: second,
+        );
+        list.add(model);
 
-    // 두 리스트 중 짧은 쪽 길이에 맞춰 생성
-    int count = keywords.length < titles.length
-        ? keywords.length
-        : titles.length;
-
-    for (int i = 0; i < count; i++) {
-      list.add(
-        BlogTitleInfoModel(
-          main_keyword: keywords[i].trim(),
-          posting_title: titles[i].trim(),
-        ),
-      );
+        state = state.copyWith(titleUrlList: list);
+      }
     }
+  }
 
-    state = state.copyWith(titleList: list);
+  void addBlogInfoMulti({required String first, required String second}) {
+    if (state.postTitleType == PostTitleType.keyword) {
+      final keywords = first
+          .split('\n')
+          .where((s) => s.trim().isNotEmpty)
+          .toList();
+      final titles = second
+          .split('\n')
+          .where((s) => s.trim().isNotEmpty)
+          .toList();
+
+      final list = [...state.titleKeywordList];
+
+      // 두 리스트 중 짧은 쪽 길이에 맞춰 생성
+      int count = keywords.length < titles.length
+          ? keywords.length
+          : titles.length;
+
+      for (int i = 0; i < count; i++) {
+        list.add(
+          BlogTitleInfoModel(
+            main_keyword: keywords[i].trim(),
+            posting_title: titles[i].trim(),
+          ),
+        );
+      }
+
+      state = state.copyWith(titleKeywordList: list);
+    } else {
+      final title = first
+          .split('\n')
+          .where((s) => s.trim().isNotEmpty)
+          .toList();
+      final url = second.split('\n').where((s) => s.trim().isNotEmpty).toList();
+
+      final list = [...state.titleUrlList];
+
+      // 두 리스트 중 짧은 쪽 길이에 맞춰 생성
+      int count = title.length < url.length ? title.length : url.length;
+
+      for (int i = 0; i < count; i++) {
+        list.add(
+          BlogTitleUrlInfoModel(
+            posting_title: title[i].trim(),
+            url: url[i].trim(),
+          ),
+        );
+      }
+
+      state = state.copyWith(titleUrlList: list);
+    }
   }
 
   void resetBlogInfoModel() {
-    state = state.copyWith(titleList: []);
+    if (state.postTitleType == PostTitleType.keyword) {
+      state = state.copyWith(titleKeywordList: []);
+    } else {
+      state = state.copyWith(titleUrlList: []);
+    }
   }
 
   void removeBlogInfo({required int index}) {
-    final newList = [...state.titleList];
-    newList.removeAt(index);
-    state = state.copyWith(titleList: newList);
+    if (state.postTitleType == PostTitleType.keyword) {
+      final newList = [...state.titleKeywordList];
+      newList.removeAt(index);
+      state = state.copyWith(titleKeywordList: newList);
+    } else {
+      final newList = [...state.titleUrlList];
+      newList.removeAt(index);
+      state = state.copyWith(titleUrlList: newList);
+    }
   }
 
   void userCheckChange({required int index}) {
@@ -184,8 +260,22 @@ class MainViewModel extends Notifier<MainState> {
     state = state.copyWith(distributionType: type);
   }
 
+  void changeMainBlogType(MainBlogType type) {
+    state = state.copyWith(mainBlogType: type);
+  }
+
   void changePostType(PostType type) {
     state = state.copyWith(postType: type);
+  }
+
+  void changePostTitleType(PostTitleType type) {
+    state = state.copyWith(
+      postTitleType: type,
+      titleKeywordList: [],
+      titleUrlList: [],
+    );
+    ref.read(mainKeyWordControllerProvider).clear();
+    ref.read(blogTitleControllerProvider).clear();
   }
 
   void changeBlogInsertType(BlogInsertType type) {
@@ -260,9 +350,20 @@ class MainViewModel extends Notifier<MainState> {
       return ValidationResult(false, "워드프레스 사이트 URL을 입력해주세요.");
     }
 
+    // 3-1. 링크 상단 문구
+    if (ref.read(linkTopTextControllerProvider).text.trim().isEmpty) {
+      return ValidationResult(false, "링크 상단 문구를 입력해주세요.");
+    }
+
     // 4. 제목 리스트
-    if (state.titleList.isEmpty) {
-      return ValidationResult(false, "메인 키워드 및 제목을 추가해주세요.");
+    if (state.postTitleType == PostTitleType.keyword) {
+      if (state.titleKeywordList.isEmpty) {
+        return ValidationResult(false, "메인 키워드 및 제목을 추가해주세요.");
+      }
+    } else {
+      if (state.titleUrlList.isEmpty) {
+        return ValidationResult(false, "블로그 제목 및 워드프레스 링크를 추가해주세요.");
+      }
     }
 
     // 5. 발행 주기
@@ -389,6 +490,7 @@ class MainViewModel extends Notifier<MainState> {
     // 1. 데이터 준비 (생략되지 않도록 유지)
     final proxyUrl = ref.read(proxyUrlControllerProvider).text;
     final siteUrl = ref.read(wordpressURLControllerProvider).text;
+    final linkTopText = ref.read(linkTopTextControllerProvider).text;
     final aiWriteRole = ref.read(aiwriteOrderControllerProvider).text;
     final postingTerm =
         int.tryParse(ref.read(postingCycleControllerProvider).text) ?? 0;
@@ -397,9 +499,15 @@ class MainViewModel extends Notifier<MainState> {
       "proxy": proxyUrl,
       "proxyUse": state.isProxySetting,
       "authList": state.userInfoList.map((e) => e.toJson()).toList(),
+      "mainBlogType": state.mainBlogType.name,
       "postType": state.postType.name,
       "siteUrl": siteUrl,
-      "postTitle": state.titleList.map((e) => e.toJson()).toList(),
+      "linkTopText": linkTopText,
+      "postTitleType": state.postTitleType.name,
+      "postKeywordTitleList": state.titleKeywordList
+          .map((e) => e.toJson())
+          .toList(),
+      "postURLTitleList": state.titleUrlList.map((e) => e.toJson()).toList(),
       "autoChangeQRLink": state.isQRLinkChange,
       "aiWriteRole": aiWriteRole,
       "postingTerm": postingTerm,
@@ -452,6 +560,42 @@ class MainViewModel extends Notifier<MainState> {
       return MainReturnModel(msg: errorMsg, errorCode: 2);
     } finally {
       state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<bool> fetchSavedCredentials(int userId) async {
+    try {
+      // 1. UseCase 호출
+      final useCase = ref.read(getCredentialsUseCaseProvider);
+      final List<BlogCredentialModel> credentials = await useCase.execute(
+        userId,
+      );
+
+      if (credentials.isNotEmpty) {
+        // 2. 모델 변환 및 매핑
+        final List<MainUserInfoModel> savedUserList = credentials.map((cred) {
+          return MainUserInfoModel(
+            currentUserId: cred.currentUserId.toString(),
+            userId: cred.loginId,
+            userPassword: cred.loginPw,
+            postingCount: state.distributionType == DistributionType.auto
+                ? 5
+                : 0,
+            isPostingCheck: true,
+            proxy_id: cred.proxyId,
+            proxy_pw: cred.proxyPw,
+            port: cred.proxyPort,
+          );
+        }).toList();
+
+        // 3. 상태 업데이트
+        state = state.copyWith(userInfoList: savedUserList);
+        return true; // 계정이 있고 성공했으므로 true
+      }
+      return false; // 계정이 없으므로 false
+    } catch (e) {
+      print("Error fetching credentials: $e");
+      return false; // 에러 발생 시 false
     }
   }
 }

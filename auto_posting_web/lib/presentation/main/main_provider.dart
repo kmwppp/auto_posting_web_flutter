@@ -57,6 +57,13 @@ final wordpressURLControllerProvider = Provider.autoDispose((ref) {
   return controller;
 });
 
+// 링크 상단 문구 컨트롤러
+final linkTopTextControllerProvider = Provider.autoDispose((ref) {
+  final controller = TextEditingController(text: "자세한 정보는 아래에서 확인해보세요.");
+  ref.onDispose(() => controller.dispose());
+  return controller;
+});
+
 // 블로그 제목 컨트롤러
 final blogTitleControllerProvider = Provider.autoDispose((ref) {
   final controller = TextEditingController();

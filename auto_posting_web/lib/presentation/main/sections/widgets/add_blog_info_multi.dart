@@ -12,6 +12,7 @@ class AddBlogInfoMulti extends StatelessWidget {
       spacing: 10,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        SizedBox(height: 10),
         Text("새 메인키워드 및 제목 추가", style: context.bodyLarge),
         BlogInfoRow(),
       ],

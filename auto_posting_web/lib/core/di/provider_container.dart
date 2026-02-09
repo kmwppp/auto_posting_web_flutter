@@ -10,6 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../presentation/main/data/data_source/main_remote_data_source.dart';
 import '../../presentation/main/data/repositories/main_repository.dart';
 import '../../presentation/main/data/repositories/main_repository_impl.dart';
+import '../../presentation/main/domain/use_cases/delete_credential_use_case.dart';
+import '../../presentation/main/domain/use_cases/get_blog_credentials_use_case.dart';
 import '../../presentation/main/domain/use_cases/send_posting_data_use_case.dart';
 import '../../presentation/main/domain/use_cases/subscribe_log_use_case.dart';
 import '../../presentation/register/data/data_source/regist_remote_data_source.dart';
@@ -69,4 +71,15 @@ final registRepositoryProvider = Provider<RegistRepository>(
 // 3. UseCase
 final registDataUseCaseProvider = Provider(
   (ref) => SendRegistDataUseCase(ref.read(registRepositoryProvider)),
+);
+
+// 내 네이버 아이디 가져오기
+final getCredentialsUseCaseProvider = Provider((ref) {
+  return GetBlogCredentialsUseCase(ref.watch(mainRepositoryProvider));
+});
+
+// 내 네이버 아이디 삭제
+// di/provider_container.dart (의존성 주입)
+final deleteCredentialUseCaseProvider = Provider(
+  (ref) => DeleteCredentialUseCase(ref.watch(mainRepositoryProvider)),
 );

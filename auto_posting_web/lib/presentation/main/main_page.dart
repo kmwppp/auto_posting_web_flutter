@@ -31,28 +31,64 @@ class _MainPageState extends ConsumerState<MainPage> {
     });
   }
 
+  // 1. 진입점 (EntryPoint)
   void _checkStatusOnEntry() async {
     final authState = ref.read(authStateProvider);
     final int? userIdInt = authState.userCurrentId;
 
-    if (userIdInt != null) {
-      // 1. 상태 체크 실행 및 결과 받기
-      final bool isWorking = await ref
-          .read(mainViewModelProvider.notifier)
-          .postIsWorking(userIdInt.toString());
+    if (userIdInt == null) return;
 
-      // 2. 결과가 true라면 다이얼로그 표시
-      if (isWorking) {
-        // ViewModel에 미리 세팅해둔 메세지 가져오기
-        final msg = ref.read(mainViewModelProvider.notifier).dialogMsg;
+    // 데이터와 상태 체크를 순차적으로 실행
+    await _loadSavedUserCredentials(userIdInt);
+    await _checkActivePostingJob(userIdInt);
+  }
 
-        if (mounted) {
-          // 💡 비동기 작업 후 컨텍스트가 유효한지 확인하는 습관!
-          _showWorkingDialog(context, msg);
-          // 메세지 초기화
-          ref.read(mainViewModelProvider.notifier).dialogMsg = "";
-        }
-      }
+  // 2. 저장된 계정 정보 로드 전용
+  Future<void> _loadSavedUserCredentials(int userId) async {
+    final bool hasData = await ref
+        .read(mainViewModelProvider.notifier)
+        .fetchSavedCredentials(userId);
+
+    if (hasData && mounted) {
+      debugPrint("✅ DB 계정 정보 로드 완료");
+
+      // 불러온 계정 개수 확인
+      final count = ref.read(mainViewModelProvider).userInfoList.length;
+
+      // 스낵바 호출 (이미 로직이 수행되어 UI에 반영된 후 하단에 알림)
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("저장된 계정 정보 $count건을 불러왔습니다."),
+          duration: const Duration(seconds: 2),
+          // 2초간 표시
+          backgroundColor: Colors.blueGrey[800],
+          // 배경색 살짝 어둡게
+          behavior: SnackBarBehavior.floating,
+          // 플로팅 스타일 (둥근 모서리)
+          action: SnackBarAction(
+            label: "확인",
+            textColor: Colors.white,
+            onPressed: () {
+              ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            },
+          ),
+        ),
+      );
+    }
+  }
+
+  // 3. 현재 진행 중인 작업 체크 및 다이얼로그 전용
+  Future<void> _checkActivePostingJob(int userId) async {
+    final bool isWorking = await ref
+        .read(mainViewModelProvider.notifier)
+        .postIsWorking(userId.toString());
+
+    if (isWorking && mounted) {
+      final msg = ref.read(mainViewModelProvider.notifier).dialogMsg;
+      _showWorkingDialog(context, msg);
+
+      // 알림 후 메세지 초기화
+      ref.read(mainViewModelProvider.notifier).dialogMsg = "";
     }
   }
 

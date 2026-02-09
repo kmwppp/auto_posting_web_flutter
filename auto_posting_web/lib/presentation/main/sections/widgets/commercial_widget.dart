@@ -17,6 +17,7 @@ class CommercialWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(mainViewModelProvider);
     final urlController = ref.watch(wordpressURLControllerProvider);
+    final linkTopTextController = ref.watch(linkTopTextControllerProvider);
     final notifier = ref.read(mainViewModelProvider.notifier);
 
     return Column(
@@ -33,11 +34,15 @@ class CommercialWidget extends ConsumerWidget {
         //   onChanged: (value) => notifier.changeCreatePostType(value),
         // ),
         // SizedBox(height: 16),
-        Text("워드프레스 사이트 URL", style: context.bodyLarge),
+        Text(
+          "${state.mainBlogType == MainBlogType.wordPress ? "워드프레스" : "블로그 스팟"} 사이트 URL",
+          style: context.bodyLarge,
+        ),
         SizedBox(height: 6),
         _input(
           context: context,
-          inputHint: "https://example.com/ (당신의 워드프레스 메인 주소 입력)",
+          inputHint:
+              "https://example.com/ (당신의 ${state.mainBlogType == MainBlogType.wordPress ? "워드프레스" : "블로그 스팟"} 메인 주소 입력)",
           controller: urlController,
           align: Alignment.center,
         ),
@@ -46,11 +51,40 @@ class CommercialWidget extends ConsumerWidget {
           "프로그램이 이 사이트에서 제목과 가장 유사한 글을 찾습니다.",
           style: context.body.copyWith(color: Colors.grey),
         ),
+        Divider(),
+        SizedBox(height: 16),
+        Text("링크 상단 문구", style: context.bodyLarge),
+        SizedBox(height: 6),
+        _input(
+          context: context,
+          inputHint: "ex) 자세한 정보는 아래에서 확인해 보세요.",
+          controller: linkTopTextController,
+          align: Alignment.center,
+        ),
+
         SizedBox(height: 16),
         Divider(),
         SizedBox(height: 16),
-        Text("블로그 메인 키워드 및 제목", style: context.bodyLarge),
+        Text(
+          "블로그 글쓰기 타입 선택",
+          style: context.bodyLarge.copyWith(fontWeight: FontWeight.bold),
+        ),
         SizedBox(height: 6),
+        CommonRadioGroup<PostTitleType>(
+          groupValue: state.postTitleType,
+          items: [
+            CommonRadioItem(
+              label: '블로그 메인 키워드 및 제목',
+              value: PostTitleType.keyword,
+            ),
+            CommonRadioItem(
+              label: '블로그 제목 및 워드프레스 링크',
+              value: PostTitleType.url,
+            ),
+          ],
+          onChanged: (value) => notifier.changePostTitleType(value),
+        ),
+        Divider(),
         CommonRadioGroup<BlogInsertType>(
           groupValue: state.blogInsertType,
           items: [
@@ -59,6 +93,7 @@ class CommercialWidget extends ConsumerWidget {
           ],
           onChanged: (value) => notifier.changeBlogInsertType(value),
         ),
+        Divider(),
         if (state.blogInsertType == BlogInsertType.single) AddBlogInfoSingle(),
         if (state.blogInsertType == BlogInsertType.multi) AddBlogInfoMulti(),
         SizedBox(height: 10),
@@ -90,22 +125,39 @@ class CommercialWidget extends ConsumerWidget {
           ),
           child: Padding(
             padding: const EdgeInsets.all(20),
-            child: Column(
-              spacing: 4,
-              children: state.titleList.isEmpty
-                  ? [
-                      Center(
-                        child: Text(
-                          "추가된 블로그 주제가 없습니다.",
-                          style: AppTextStyles.bodyLarge,
-                        ),
-                      ),
-                    ]
-                  : state.titleList.asMap().entries.map((entry) {
-                      int index = entry.key; // 여기에 index가 들어있습니다.
-                      return BlogInfoListRow(index: index);
-                    }).toList(),
-            ),
+            child: state.postTitleType == PostTitleType.keyword
+                ? Column(
+                    spacing: 4,
+                    children: state.titleKeywordList.isEmpty
+                        ? [
+                            Center(
+                              child: Text(
+                                "추가된 블로그 주제가 없습니다.",
+                                style: AppTextStyles.bodyLarge,
+                              ),
+                            ),
+                          ]
+                        : state.titleKeywordList.asMap().entries.map((entry) {
+                            int index = entry.key; // 여기에 index가 들어있습니다.
+                            return BlogInfoListRow(index: index);
+                          }).toList(),
+                  )
+                : Column(
+                    spacing: 4,
+                    children: state.titleUrlList.isEmpty
+                        ? [
+                            Center(
+                              child: Text(
+                                "추가된 블로그 주제가 없습니다.",
+                                style: AppTextStyles.bodyLarge,
+                              ),
+                            ),
+                          ]
+                        : state.titleUrlList.asMap().entries.map((entry) {
+                            int index = entry.key; // 여기에 index가 들어있습니다.
+                            return BlogInfoListRow(index: index);
+                          }).toList(),
+                  ),
             // child: Center(child: Text("추가된 계정이 없습니다.")),
           ),
         ),

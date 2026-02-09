@@ -1,3 +1,5 @@
+import 'package:auto_posting_web/data/model/blog_credential_model.dart';
+
 import '../data_source/main_remote_data_source.dart';
 import 'main_repository.dart';
 
@@ -20,5 +22,21 @@ class MainRepositoryImpl implements MainRepository {
   @override
   Future<dynamic> sendIsWorking(String userId) async {
     return await _dataSource.postIsWorking(userId);
+  }
+
+  @override
+  Future<List<BlogCredentialModel>> fetchCredentials(int userId) {
+    return _dataSource.getCredentials(userId);
+  }
+
+  @override
+  Future<bool> deleteCredential({
+    required int ownerId,
+    required String loginId,
+  }) async {
+    return await _dataSource.deleteCredential(
+      ownerId: ownerId,
+      loginId: loginId,
+    );
   }
 }

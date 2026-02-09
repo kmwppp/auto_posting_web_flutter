@@ -65,7 +65,14 @@ class UserInfoRow extends ConsumerWidget {
                 SizedBox(width: 20),
                 IconButton(
                   onPressed: () {
-                    notifier.removeUserInfo(index: index);
+                    notifier.removeUserInfo(
+                      index: index,
+                      ownerId:
+                          int.tryParse(
+                            state.userInfoList[index].currentUserId,
+                          ) ??
+                          0,
+                    );
                   },
                   icon: Icon(Icons.close, size: 24),
                 ),

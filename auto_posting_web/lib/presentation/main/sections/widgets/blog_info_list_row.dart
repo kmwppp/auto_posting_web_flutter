@@ -1,3 +1,4 @@
+import 'package:auto_posting_web/presentation/main/main_enums.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -34,14 +35,18 @@ class BlogInfoListRow extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "메인 키워드:",
+                            state.postTitleType == PostTitleType.keyword
+                                ? "메인 키워드:"
+                                : "블로그 글 제목",
                             style: context.bodyLarge.copyWith(
                               fontWeight: FontWeight.bold,
                             ),
                           ),
                           SizedBox(width: 10),
                           Text(
-                            state.titleList[index].main_keyword,
+                            state.postTitleType == PostTitleType.keyword
+                                ? state.titleKeywordList[index].main_keyword
+                                : state.titleUrlList[index].posting_title,
                             style: context.bodyLarge,
                           ),
                         ],
@@ -58,7 +63,9 @@ class BlogInfoListRow extends ConsumerWidget {
                 Row(
                   children: [
                     Text(
-                      "제목:",
+                      state.postTitleType == PostTitleType.keyword
+                          ? "제목:"
+                          : "URL",
                       style: context.bodyLarge.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
@@ -66,7 +73,9 @@ class BlogInfoListRow extends ConsumerWidget {
                     SizedBox(width: 10),
                     Expanded(
                       child: Text(
-                        state.titleList[index].posting_title,
+                        state.postTitleType == PostTitleType.keyword
+                            ? state.titleKeywordList[index].posting_title
+                            : state.titleUrlList[index].url,
                         style: context.bodyLarge,
                       ),
                     ),

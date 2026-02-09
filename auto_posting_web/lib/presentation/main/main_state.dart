@@ -1,6 +1,7 @@
 import 'package:auto_posting_web/data/model/blog_title_info_model.dart';
 import 'package:auto_posting_web/data/model/main_user_info_model.dart';
 
+import '../../data/model/blog_title_url_info_model.dart';
 import 'main_enums.dart';
 
 /**
@@ -19,14 +20,17 @@ class MainState {
   final bool isProxySetting;
   final List<MainUserInfoModel> userInfoList;
   final DistributionType distributionType;
+  final MainBlogType mainBlogType;
   final PostType postType;
   final BlogInsertType blogInsertType;
   final CreatePostType createPostType;
+  final PostTitleType postTitleType;
   final bool isQRLinkChange;
   final double aiImgCount;
   final AIPhotoType selectedImageStyle;
   final PostingType postingType;
-  final List<BlogTitleInfoModel> titleList;
+  final List<BlogTitleInfoModel> titleKeywordList;
+  final List<BlogTitleUrlInfoModel> titleUrlList;
 
   final List<String> logList;
 
@@ -35,14 +39,17 @@ class MainState {
     required this.isProxySetting,
     required this.userInfoList,
     required this.distributionType,
+    required this.mainBlogType,
     required this.postType,
     required this.blogInsertType,
     required this.createPostType,
+    required this.postTitleType,
     required this.isQRLinkChange,
     required this.aiImgCount,
     required this.selectedImageStyle,
     required this.postingType,
-    required this.titleList,
+    required this.titleKeywordList,
+    required this.titleUrlList,
     required this.logList,
   });
 
@@ -51,14 +58,17 @@ class MainState {
     bool? isProxySetting,
     List<MainUserInfoModel>? userInfoList,
     DistributionType? distributionType,
+    MainBlogType? mainBlogType,
     PostType? postType,
     BlogInsertType? blogInsertType,
     CreatePostType? createPostType,
+    PostTitleType? postTitleType,
     bool? isQRLinkChange,
     double? aiImgCount,
     AIPhotoType? selectedImageStyle,
     PostingType? postingType,
-    List<BlogTitleInfoModel>? titleList,
+    List<BlogTitleInfoModel>? titleKeywordList,
+    List<BlogTitleUrlInfoModel>? titleUrlList,
     List<String>? logList,
   }) {
     return MainState(
@@ -66,14 +76,17 @@ class MainState {
       isProxySetting: isProxySetting ?? this.isProxySetting,
       userInfoList: userInfoList ?? this.userInfoList,
       distributionType: distributionType ?? this.distributionType,
+      mainBlogType: mainBlogType ?? this.mainBlogType,
       postType: postType ?? this.postType,
       blogInsertType: blogInsertType ?? this.blogInsertType,
       createPostType: createPostType ?? this.createPostType,
+      postTitleType: postTitleType ?? this.postTitleType,
       isQRLinkChange: isQRLinkChange ?? this.isQRLinkChange,
       aiImgCount: aiImgCount ?? this.aiImgCount,
       selectedImageStyle: selectedImageStyle ?? this.selectedImageStyle,
       postingType: postingType ?? this.postingType,
-      titleList: titleList ?? this.titleList,
+      titleKeywordList: titleKeywordList ?? this.titleKeywordList,
+      titleUrlList: titleUrlList ?? this.titleUrlList,
       logList: logList ?? this.logList,
     );
   }
@@ -84,14 +97,17 @@ class MainState {
       isProxySetting: true,
       userInfoList: [],
       distributionType: DistributionType.auto,
+      mainBlogType: MainBlogType.wordPress,
       postType: PostType.commercial,
       blogInsertType: BlogInsertType.single,
       createPostType: CreatePostType.title,
+      postTitleType: PostTitleType.keyword,
       isQRLinkChange: true,
       aiImgCount: 0,
       selectedImageStyle: AIPhotoType.photoRealistic,
       postingType: PostingType.immediately,
-      titleList: [],
+      titleKeywordList: [],
+      titleUrlList: [],
       logList: [],
     );
   }
