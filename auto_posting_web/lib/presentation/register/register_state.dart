@@ -5,7 +5,7 @@ class RegisterState {
   final bool isSamePassword;
   final String userName;
   final String phoneNumber;
-
+  final String openAiKey;
   final bool isLoading;
 
   const RegisterState({
@@ -15,6 +15,7 @@ class RegisterState {
     required this.isSamePassword,
     required this.userName,
     required this.phoneNumber,
+    required this.openAiKey,
     required this.isLoading,
   });
 
@@ -25,6 +26,7 @@ class RegisterState {
     bool? isSamePassword,
     String? userName,
     String? phoneNumber,
+    String? openAiKey,
     bool? isLoading,
   }) {
     return RegisterState(
@@ -34,6 +36,7 @@ class RegisterState {
       isSamePassword: isSamePassword ?? this.isSamePassword,
       userName: userName ?? this.userName,
       phoneNumber: phoneNumber ?? this.phoneNumber,
+      openAiKey: openAiKey ?? this.openAiKey,
       isLoading: isLoading ?? this.isLoading,
     );
   }
@@ -46,6 +49,7 @@ class RegisterState {
       isSamePassword: true,
       userName: '',
       phoneNumber: '',
+      openAiKey: '',
       isLoading: false,
     );
   }

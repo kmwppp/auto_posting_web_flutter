@@ -63,6 +63,14 @@ class RegisterInputSection extends ConsumerWidget {
             notifier.changePhoneNumber(value);
           },
         ),
+        SizedBox(height: 6),
+        LoginInputWidget(
+          inputTitle: "OPEN AI Key",
+          inputHint: "OPEN AI Key를 입력해주세요.",
+          onChanged: (value) {
+            notifier.changeOpenAiKey(value);
+          },
+        ),
       ],
     );
   }

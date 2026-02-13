@@ -43,6 +43,10 @@ class RegisterViewModel extends Notifier<RegisterState> {
     state = state.copyWith(phoneNumber: str);
   }
 
+  void changeOpenAiKey(String str) {
+    state = state.copyWith(openAiKey: str);
+  }
+
   RegistReturnModel _inputEmptyValidation({
     required String userId,
     required String password,
@@ -82,11 +86,13 @@ class RegisterViewModel extends Notifier<RegisterState> {
 
   // 서버로 보낼 JSON 매핑 메소드
   Future<RegistReturnModel> sendToServer() async {
+    print(state.openAiKey);
     state = state.copyWith(isLoading: true);
     final userId = state.userId;
     final password = state.userPassword;
     final userName = state.userName;
     var phoneNumber = state.phoneNumber;
+    final openai_key = state.openAiKey;
 
     phoneNumber = Util.phoneNumberSet(phoneNumber);
 
@@ -107,6 +113,7 @@ class RegisterViewModel extends Notifier<RegisterState> {
       "password": password,
       "name": userName,
       "phoneNum": phoneNumber,
+      "openai_key": openai_key,
     };
 
     try {
@@ -128,12 +135,9 @@ class RegisterViewModel extends Notifier<RegisterState> {
       state = state.copyWith(isLoading: false);
       switch (status) {
         case "success":
-          return RegistReturnModel(
-            msg: "회원가입 신청을 하였습니다. 관리자에게 문의하여 승인을 받아주세요.",
-            errorCode: 0,
-          );
+          return RegistReturnModel(msg: message, errorCode: 0);
         case "fail":
-          return RegistReturnModel(msg: "현재 가입된 아이디가 있습니다.", errorCode: 1);
+          return RegistReturnModel(msg: message, errorCode: 1);
         case "error":
           return RegistReturnModel(msg: "알 수 없는 에러가 발생하였습니다.", errorCode: 1);
       }
