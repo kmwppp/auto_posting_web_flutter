@@ -32,7 +32,7 @@ class LoginViewModel extends Notifier<LoginState> {
   }
 
   // 서버로 보낼 JSON 매핑 메소드
-  Future<LoginReturnModel> sendToServer() async {
+  Future<LoginReturnModel> sendToServer({required bool isAdmin}) async {
     state = state.copyWith(isLoading: true);
     final user_id = state.userId;
     final password = state.userPassword;
@@ -63,7 +63,7 @@ class LoginViewModel extends Notifier<LoginState> {
     try {
       final useCase = ref.read(loginDataUseCaseProvider);
       // 1. 서버 통신 실행
-      final result = await useCase.execute(requestData);
+      final result = await useCase.execute(requestData, isAdmin);
 
       // 2. 응답 데이터 처리 (성공 시 보통 200 OK)
       Map<String, dynamic> response;

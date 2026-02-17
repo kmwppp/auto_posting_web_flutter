@@ -5,3 +5,5 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 final loginViewModelProvider = NotifierProvider<LoginViewModel, LoginState>(
   LoginViewModel.new,
 );
+
+final isAdminProvider = Provider<bool>((ref) => throw UnimplementedError());

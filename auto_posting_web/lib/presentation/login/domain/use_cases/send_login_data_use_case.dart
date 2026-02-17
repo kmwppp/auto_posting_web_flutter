@@ -5,7 +5,7 @@ class SendLoginDataUseCase {
 
   SendLoginDataUseCase(this._repository);
 
-  Future<dynamic> execute(Map<String, dynamic> data) async {
-    return await _repository.sendPostLogin(data);
+  Future<dynamic> execute(Map<String, dynamic> data, bool isAdmin) async {
+    return await _repository.sendPostLogin(data, isAdmin);
   }
 }

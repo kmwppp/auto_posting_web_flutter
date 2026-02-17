@@ -7,7 +7,7 @@ class LoginRepositoryImpl implements LoginRepository {
   LoginRepositoryImpl(this._dataSource);
 
   @override
-  Future<dynamic> sendPostLogin(Map<String, dynamic> data) async {
-    return await _dataSource.postLoginData(data);
+  Future<dynamic> sendPostLogin(Map<String, dynamic> data, bool isAdmin) async {
+    return await _dataSource.postLoginData(data, isAdmin);
   }
 }

@@ -7,8 +7,11 @@ class LoginRemoteDataSource {
 
   final String MAIN_SERVER = "https://hntrack.co.kr";
 
-  Future<dynamic> postLoginData(Map<String, dynamic> data) async {
-    final response = await _dio.post('$MAIN_SERVER/api/login', data: data);
+  Future<dynamic> postLoginData(Map<String, dynamic> data, bool isAdmin) async {
+    final serverUrl = !isAdmin
+        ? '$MAIN_SERVER/api/login'
+        : '$MAIN_SERVER/api/admin/login';
+    final response = await _dio.post(serverUrl, data: data);
     return response.data;
   }
 }

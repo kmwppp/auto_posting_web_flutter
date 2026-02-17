@@ -1,3 +1,3 @@
 abstract class LoginRepository {
-  Future<dynamic> sendPostLogin(Map<String, dynamic> data);
+  Future<dynamic> sendPostLogin(Map<String, dynamic> data, bool isAdmin);
 }

@@ -4,8 +4,11 @@ import 'package:flutter_riverpod/legacy.dart';
 class AuthProvider extends ChangeNotifier {
   bool _isLoggedIn = false;
   int? userCurrentId;
+  bool _isAdmin = false;
 
   bool get isLoggedIn => _isLoggedIn;
+
+  bool get isAdmin => _isAdmin;
 
   // 앱 시작 시 로그인 상태 초기화 (예: SharedPreferences에서 토큰 읽기)
   Future<void> checkLoginStatus() async {
@@ -16,8 +19,9 @@ class AuthProvider extends ChangeNotifier {
   }
 
   // 로그인 성공 시 호출
-  void login({required int userCurrentId}) {
+  void login({required int userCurrentId, required bool isAdmin}) {
     _isLoggedIn = true;
+    _isAdmin = isAdmin;
     this.userCurrentId = userCurrentId;
     notifyListeners(); // 중요: 이걸 호출해야 라우터가 반응함
   }
@@ -25,6 +29,7 @@ class AuthProvider extends ChangeNotifier {
   // 로그아웃 시 호출
   void logout() {
     _isLoggedIn = false;
+    _isAdmin = false; // ★ 로그아웃 시 초기화
     notifyListeners();
   }
 }

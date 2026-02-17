@@ -6,37 +6,42 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class LoginPage extends ConsumerWidget {
-  const LoginPage({super.key});
+  final bool isAdmin;
+
+  const LoginPage({super.key, this.isAdmin = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(loginViewModelProvider);
-    return Stack(
-      children: [
-        Scaffold(
-          backgroundColor: Colors.black12,
-          appBar: LoginAppbar(),
-          body: SafeArea(
-            child: Center(
-              child: SizedBox(
-                width: 300,
-                child: Column(
-                  spacing: 20,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    LoginInputSection(),
-                    Divider(),
-                    LoginButtonSection(),
-                  ],
+    return ProviderScope(
+      overrides: [isAdminProvider.overrideWithValue(isAdmin)],
+      child: Stack(
+        children: [
+          Scaffold(
+            backgroundColor: Colors.black12,
+            appBar: LoginAppbar(),
+            body: SafeArea(
+              child: Center(
+                child: SizedBox(
+                  width: 300,
+                  child: Column(
+                    spacing: 20,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      LoginInputSection(),
+                      Divider(),
+                      LoginButtonSection(),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
 
-        // if (state.isLoading) _buildLoadingOverlay(),
-      ],
+          // if (state.isLoading) _buildLoadingOverlay(),
+        ],
+      ),
     );
   }
 

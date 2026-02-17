@@ -11,6 +11,7 @@ class LoginButtonSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isAdmin = ref.watch(isAdminProvider);
     final state = ref.watch(loginViewModelProvider);
     final notifier = ref.read(loginViewModelProvider.notifier);
     return Column(
@@ -19,29 +20,37 @@ class LoginButtonSection extends ConsumerWidget {
         GestureDetector(
           onTap: () async {
             // ref.read(authStateProvider).login(userCurrentId: 1);
-            final response = await notifier.sendToServer();
-            showDialog(
-              context: context,
-              builder: (context) =>
-                  AlertDialog(
-                    title: const Text("로그인"),
-                    content: Text(response.msg),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          if (response.errorCode == 0) {
-                            ref
-                                .read(authStateProvider)
-                                .login(userCurrentId: response.userCurrentId);
-                          } else {
-                            Navigator.pop(context);
-                          }
-                        },
-                        child: const Text("확인"),
-                      ),
-                    ],
-                  ),
-            );
+            if (!isAdmin) {
+              final response = await notifier.sendToServer(isAdmin: isAdmin);
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text("로그인"),
+                  content: Text(response.msg),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        if (response.errorCode == 0) {
+                          ref
+                              .read(authStateProvider)
+                              .login(
+                                userCurrentId: response.userCurrentId,
+                                isAdmin: isAdmin,
+                              );
+                        } else {
+                          Navigator.pop(context);
+                        }
+                      },
+                      child: const Text("확인"),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              ref
+                  .read(authStateProvider)
+                  .login(userCurrentId: 1, isAdmin: isAdmin);
+            }
           },
           child: Container(
             decoration: BoxDecoration(
@@ -53,40 +62,41 @@ class LoginButtonSection extends ConsumerWidget {
             alignment: Alignment.center,
             child: state.isLoading
                 ? SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                color: Colors.white,
-                strokeWidth: 2,
-              ),
-            )
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
                 : Text(
-              "로그인",
-              textAlign: TextAlign.center,
-              style: context.bodyLarge.copyWith(color: Colors.white),
-            ),
+                    "로그인",
+                    textAlign: TextAlign.center,
+                    style: context.bodyLarge.copyWith(color: Colors.white),
+                  ),
           ),
         ),
 
-        GestureDetector(
-          onTap: () {
-            context.push('/register');
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.blueAccent,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            width: double.infinity,
-            height: 40,
-            alignment: Alignment.center,
-            child: Text(
-              "회원가입",
-              textAlign: TextAlign.center,
-              style: context.bodyLarge.copyWith(color: Colors.white),
+        if (!isAdmin)
+          GestureDetector(
+            onTap: () {
+              context.push('/register');
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.blueAccent,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              width: double.infinity,
+              height: 40,
+              alignment: Alignment.center,
+              child: Text(
+                "회원가입",
+                textAlign: TextAlign.center,
+                style: context.bodyLarge.copyWith(color: Colors.white),
+              ),
             ),
           ),
-        ),
       ],
     );
   }
