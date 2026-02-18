@@ -10,4 +10,14 @@ class AdminRepositoryImpl implements AdminRepository {
   Future<dynamic> postUserStatusData(Map<String, dynamic> data) async {
     return await _dataSource.postUserStatusData(data);
   }
+
+  @override
+  Future<dynamic> getUserList() async {
+    return await _dataSource.postUserList();
+  }
+
+  @override
+  Future<dynamic> postUserSuccessLogs(Map<String, dynamic> data) async {
+    return await _dataSource.postUserSuccessLogs(data);
+  }
 }

@@ -19,38 +19,38 @@ class LoginButtonSection extends ConsumerWidget {
       children: [
         GestureDetector(
           onTap: () async {
-            // ref.read(authStateProvider).login(userCurrentId: 1);
-            if (!isAdmin) {
-              final response = await notifier.sendToServer(isAdmin: isAdmin);
-              showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text("로그인"),
-                  content: Text(response.msg),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        if (response.errorCode == 0) {
-                          ref
-                              .read(authStateProvider)
-                              .login(
-                                userCurrentId: response.userCurrentId,
-                                isAdmin: isAdmin,
-                              );
-                        } else {
-                          Navigator.pop(context);
-                        }
-                      },
-                      child: const Text("확인"),
-                    ),
-                  ],
-                ),
-              );
-            } else {
-              ref
-                  .read(authStateProvider)
-                  .login(userCurrentId: 1, isAdmin: isAdmin);
-            }
+            final response = await notifier.sendToServer(isAdmin: isAdmin);
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text("로그인"),
+                content: Text(response.msg),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      if (response.errorCode == 0) {
+                        ref
+                            .read(authStateProvider)
+                            .login(
+                              userCurrentId: response.userCurrentId,
+                              isAdmin: isAdmin,
+                            );
+                      } else {
+                        Navigator.pop(context);
+                      }
+                    },
+                    child: const Text("확인"),
+                  ),
+                ],
+              ),
+            );
+            // if (!isAdmin) {
+            //
+            // } else {
+            //   ref
+            //       .read(authStateProvider)
+            //       .login(userCurrentId: 1, isAdmin: isAdmin);
+            // }
           },
           child: Container(
             decoration: BoxDecoration(

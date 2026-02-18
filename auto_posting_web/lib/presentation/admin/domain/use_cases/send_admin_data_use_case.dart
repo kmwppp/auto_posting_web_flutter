@@ -8,4 +8,12 @@ class SendAdminDataUseCase {
   Future<dynamic> execute(Map<String, dynamic> data) async {
     return await _repository.postUserStatusData(data);
   }
+
+  Future<dynamic> getUserList() async {
+    return await _repository.getUserList();
+  }
+
+  Future<dynamic> getUserSuccessLogs(Map<String, dynamic> data) async {
+    return await _repository.postUserSuccessLogs(data);
+  }
 }
