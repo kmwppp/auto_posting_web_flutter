@@ -38,6 +38,10 @@ class CommercialWidget extends ConsumerWidget {
           "${state.mainBlogType == MainBlogType.wordPress ? "워드프레스" : "블로그 스팟"} 사이트 URL",
           style: context.bodyLarge,
         ),
+        Text(
+          "${state.mainBlogType == MainBlogType.wordPress ? "워드프레스" : "블로그 스팟"} URL은 발행시 자동으로 저장되며 변동될 경우 자동으로 변경하여 저장합니다.",
+          style: context.body.copyWith(color: Colors.grey),
+        ),
         SizedBox(height: 6),
         _input(
           context: context,
@@ -54,6 +58,10 @@ class CommercialWidget extends ConsumerWidget {
         Divider(),
         SizedBox(height: 16),
         Text("링크 상단 문구", style: context.bodyLarge),
+        Text(
+          "링크 상단 문구는 발행시 자동으로 저장되며 변동될 경우 자동으로 변경하여 저장합니다.",
+          style: context.body.copyWith(color: Colors.grey),
+        ),
         SizedBox(height: 6),
         _input(
           context: context,

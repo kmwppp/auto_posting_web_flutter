@@ -5,12 +5,15 @@ class SendPostingDataUseCase {
 
   SendPostingDataUseCase(this._repository);
 
-  // [수정] void를 dynamic으로 바꿉니다.
   Future<dynamic> execute(Map<String, dynamic> data) async {
     return await _repository.sendPostingData(data);
   }
 
   Future<dynamic> executeIsWorking(String userId) async {
     return await _repository.sendIsWorking(userId);
+  }
+
+  Future<dynamic> executeStopWorking(String userId) async {
+    return await _repository.sendStopWorking(userId);
   }
 }

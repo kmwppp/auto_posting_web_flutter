@@ -76,7 +76,7 @@ class InsertProxy extends ConsumerWidget {
           children: [
             SizedBox(height: 8),
             Text(
-              "구매하신 프록시의 IP를 입력하세요.",
+              "구매하신 프록시의 IP를 입력하세요.\n프록시 IP는 발행시 자동으로 저장되며 변동될 경우 자동으로 변경하여 저장합니다.",
               style: context.body.copyWith(color: Colors.grey),
             ),
             InputWidget(

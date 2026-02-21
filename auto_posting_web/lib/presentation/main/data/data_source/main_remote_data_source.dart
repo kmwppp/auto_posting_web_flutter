@@ -1,4 +1,3 @@
-import 'package:auto_posting_web/data/model/blog_credential_model.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_client_sse/constants/sse_request_type_enum.dart';
 import 'package:flutter_client_sse/flutter_client_sse.dart';
@@ -21,6 +20,13 @@ class MainRemoteDataSource {
     return response.data;
   }
 
+  Future<dynamic> postStopWorking(String userId) async {
+    // URL을 직접 합쳐서 보냅니다.
+    // 결과: http://52.62.79.242/api/blog/posting
+    final response = await _dio.post('$MAIN_SERVER/api/blog/stop/$userId');
+    return response.data;
+  }
+
   Future<dynamic> postIsWorking(String userId) async {
     // URL을 직접 합쳐서 보냅니다.
     // 결과: http://52.62.79.242/api/blog/posting
@@ -37,7 +43,7 @@ class MainRemoteDataSource {
     ).map((event) => event.data ?? "");
   }
 
-  Future<List<BlogCredentialModel>> getCredentials(int userId) async {
+  Future<dynamic> getCredentials(int userId) async {
     try {
       // 결과 주소: https://hntrack.co.kr/api/blog/credentials/5
       final response = await _dio.get(
@@ -45,11 +51,12 @@ class MainRemoteDataSource {
       );
 
       if (response.statusCode == 200) {
+        return response.data;
         // Dio는 기본적으로 jsonDecode를 수행하므로 response.data를 바로 사용합니다.
-        final List<dynamic> dataList = response.data;
-        return dataList
-            .map((json) => BlogCredentialModel.fromJson(json))
-            .toList();
+        // final List<dynamic> dataList = response.data;
+        // return dataList
+        //     .map((json) => BlogCredentialModel.fromJson(json))
+        //     .toList();
       } else {
         throw Exception("데이터를 불러오는 데 실패했습니다 (Status: ${response.statusCode})");
       }

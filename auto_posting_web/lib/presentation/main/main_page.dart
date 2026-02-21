@@ -58,7 +58,7 @@ class _MainPageState extends ConsumerState<MainPage> {
       // 스낵바 호출 (이미 로직이 수행되어 UI에 반영된 후 하단에 알림)
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text("저장된 계정 정보 $count건을 불러왔습니다."),
+          content: Text("저장된 정보와 계정 정보 $count건을 불러왔습니다."),
           duration: const Duration(seconds: 2),
           // 2초간 표시
           backgroundColor: Colors.blueGrey[800],

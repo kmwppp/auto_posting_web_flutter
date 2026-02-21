@@ -27,6 +27,10 @@ class AddAuth extends StatelessWidget {
             ),
           ],
         ),
+        Text(
+          "계정은 계정 추가 시 저장되며 아래 리스트에서 삭제시 저장된 계정이 삭제 됩니다.",
+          style: context.body.copyWith(color: Colors.grey),
+        ),
         // screenWidth > 600 ? AuthWebRow() : AuthMobileColumn(),
         AuthWebRow(),
       ],

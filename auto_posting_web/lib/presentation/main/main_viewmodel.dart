@@ -6,7 +6,6 @@ import 'package:auto_posting_web/data/model/main_user_info_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/di/provider_container.dart';
-import '../../data/model/blog_credential_model.dart';
 import '../../data/model/blog_title_url_info_model.dart';
 import 'data/model/main_return_model.dart';
 import 'main_enums.dart';
@@ -373,6 +372,12 @@ class MainViewModel extends Notifier<MainState> {
       return ValidationResult(false, "올바른 발행 주기를 입력해주세요.");
     }
 
+    if (state.userInfoList[0].userId != "v2v2kmw") {
+      if (term < 15) {
+        return ValidationResult(false, "네이버 최적화를 위하여 15분이상으로 세팅해주세요.");
+      }
+    }
+
     // 모든 검증 통과
     return ValidationResult(true, "");
   }
@@ -430,7 +435,39 @@ class MainViewModel extends Notifier<MainState> {
     // 필요하다면 여기서 '완료' 상태를 state에 반영
     state = state.copyWith(
       logList: [...state.logList, "🏁 모든 포스팅 작업이 종료되었습니다."],
+      isRunning: false,
     );
+  }
+
+  Future<bool> postStopWorking(String userId) async {
+    // 1. 로딩 시작
+    state = state.copyWith(isStopLoading: true);
+
+    try {
+      final useCase = ref.read(sendPostingDataUseCaseProvider);
+      final result = await useCase.executeStopWorking(userId);
+
+      dynamic decodedResult = result;
+      if (result is String) {
+        decodedResult = jsonDecode(result);
+      }
+
+      final response = Map<String, dynamic>.from(decodedResult);
+      final String status = response['status'] ?? 'error';
+
+      // ✨ 성공일 때만 true 반환
+      if (status == 'success') {
+        return true;
+      }
+    } catch (e) {
+      // 에러 발생 시 로그를 찍어두면 나중에 디버깅하기 편합니다.
+      print("중단 요청 중 오류 발생: $e");
+    } finally {
+      // 2. 성공하든 실패하든 에러가 나든 마지막엔 무조건 로딩 해제
+      state = state.copyWith(isStopLoading: false, isRunning: false);
+    }
+
+    return false;
   }
 
   Future<bool> postIsWorking(String userId) async {
@@ -456,6 +493,7 @@ class MainViewModel extends Notifier<MainState> {
         // 1. 로그 리스트에 안내 문구 추가
         state = state.copyWith(
           logList: [...state.logList, "⏳ 기존 작업이 진행 중입니다. 연결을 시도합니다..."],
+          isRunning: true,
         );
 
         // 2. [추가] 뷰에서 감지할 수 있도록 다이얼로그 메세지 설정
@@ -532,8 +570,12 @@ class MainViewModel extends Notifier<MainState> {
       // --- 상황별 리턴 처리 ---
 
       if (status == 'success') {
+        // state 현재 작업이 시작 되었는지 업데이트
         // [성공] errorCode: 0
-        state = state.copyWith(logList: [...state.logList, "✅ $serverMessage"]);
+        state = state.copyWith(
+          logList: [...state.logList, "✅ $serverMessage"],
+          isRunning: true,
+        );
         if (streamUrl.isNotEmpty) _listenToLogs(streamUrl);
 
         return MainReturnModel(msg: serverMessage, errorCode: 0);
@@ -565,37 +607,63 @@ class MainViewModel extends Notifier<MainState> {
 
   Future<bool> fetchSavedCredentials(int userId) async {
     try {
-      // 1. UseCase 호출
+      // 1. UseCase 호출 (서버가 이제 Map을 주니까 dynamic으로 받음)
       final useCase = ref.read(getCredentialsUseCaseProvider);
-      final List<BlogCredentialModel> credentials = await useCase.execute(
-        userId,
-      );
+      final dynamic response = await useCase.execute(userId);
 
-      if (credentials.isNotEmpty) {
-        // 2. 모델 변환 및 매핑
-        final List<MainUserInfoModel> savedUserList = credentials.map((cred) {
-          return MainUserInfoModel(
-            currentUserId: cred.currentUserId.toString(),
-            userId: cred.loginId,
-            userPassword: cred.loginPw,
-            postingCount: state.distributionType == DistributionType.auto
-                ? 5
-                : 0,
-            isPostingCheck: true,
-            proxy_id: cred.proxyId,
-            proxy_pw: cred.proxyPw,
-            port: cred.proxyPort,
-          );
-        }).toList();
+      // 1. 전체 응답 데이터 출력
+      // print("================ SERVER RESPONSE ================");
+      // print("Full Response: $response");
+      // print("================================================");
 
-        // 3. 상태 업데이트
-        state = state.copyWith(userInfoList: savedUserList);
-        return true; // 계정이 있고 성공했으므로 true
+      // 데이터가 없거나 형식이 이상하면 바로 커트
+      if (response == null || response['user_credentials'] == null) {
+        return false;
       }
-      return false; // 계정이 없으므로 false
+
+      // --- 데이터 쪼개기 ---
+      final List<dynamic> credData = response['user_credentials'];
+      final Map<String, dynamic> saveInfo = response['user_save_info'] ?? {};
+
+      // print("------------------------------------------------");
+      // print("🛠 저장된 설정 정보(save_info):");
+      // print("   - IP: ${saveInfo['ip']}");
+      // print("   - URL: ${saveInfo['wp_url']}");
+      // print("   - Comment: ${saveInfo['link_comment']}");
+      // print("================================================");
+
+      // 2. 계정 리스트 모델 변환 (기존 로직 그대로)
+      final List<MainUserInfoModel> savedUserList = credData.map((data) {
+        // BlogCredentialModel.fromJson이 있다면 그걸 쓰시고,
+        // 없으면 아래처럼 직접 매핑하세요.
+        return MainUserInfoModel(
+          currentUserId: data['owner_id'].toString(),
+          userId: data['login_id'] ?? "",
+          userPassword: data['login_pw'] ?? "",
+          postingCount: state.distributionType == DistributionType.auto ? 5 : 0,
+          isPostingCheck: true,
+          proxy_id: data['proxy_id'] ?? "",
+          proxy_pw: data['proxy_pw'] ?? "",
+          port: data['proxy_port'] ?? "",
+        );
+      }).toList();
+
+      // 3. 컨트롤러(Provider) 값 업데이트 (State 대신 컨트롤러에 직접 기입)
+      ref.read(proxyUrlControllerProvider).text = saveInfo['ip'] ?? "";
+      ref.read(wordpressURLControllerProvider).text = saveInfo['wp_url'] ?? "";
+
+      final String comment = saveInfo['link_comment'] ?? "";
+      ref.read(linkTopTextControllerProvider).text = comment.isEmpty
+          ? "자세한 정보는 아래에서 확인해보세요."
+          : comment;
+
+      // 3. 상태 업데이트 (리스트랑 서버 저장 정보 한꺼번에 업데이트)
+      state = state.copyWith(userInfoList: savedUserList);
+
+      return true;
     } catch (e) {
       print("Error fetching credentials: $e");
-      return false; // 에러 발생 시 false
+      return false;
     }
   }
 }

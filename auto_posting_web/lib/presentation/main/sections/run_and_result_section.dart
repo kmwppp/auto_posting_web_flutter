@@ -3,6 +3,7 @@ import 'package:auto_posting_web/presentation/main/main_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../routes/auth_provider.dart';
 import '../main_state.dart';
 import '../main_viewmodel.dart';
 
@@ -40,7 +41,10 @@ class RunAndResultSection extends ConsumerWidget {
         children: [
           const SizedBox(height: 10),
           // 발행 시작 버튼
-          _buildStartButton(context, ref, notifier, state),
+          if (!state.isRunning)
+            _buildStartButton(context, ref, notifier, state),
+          if (state.isRunning) _buildStopButton(context, ref, notifier, state),
+
           const SizedBox(height: 20),
           // 결과 로그 섹션
           _buildResultLog(context, ref),
@@ -91,6 +95,89 @@ class RunAndResultSection extends ConsumerWidget {
                   ),
                 ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildStopButton(
+    BuildContext context,
+    WidgetRef ref,
+    MainViewModel notifier,
+    MainState state,
+  ) {
+    return InkWell(
+      // 중단 로딩 중이면 클릭 방지
+      onTap: state.isStopLoading
+          ? null
+          : () async {
+              final authState = ref.read(authStateProvider);
+              final int? userIdInt = authState.userCurrentId;
+
+              if (userIdInt == null) return;
+
+              // 중단 API 호출
+              final bool isStopped = await notifier.postStopWorking(
+                userIdInt.toString(),
+              );
+
+              if (!context.mounted) return;
+
+              if (isStopped) {
+                // true일 때: 성공 팝업
+                _showResultDialog(
+                  context,
+                  "작업 중단 요청 성공",
+                  "작업 중단 요청을 했습니다. 작업 결과 로그에서 확인해주세요.",
+                );
+              } else {
+                // false일 때: 실패/종료 팝업
+                _showResultDialog(
+                  context,
+                  "중단 불가",
+                  "현재 실행 중인 작업이 없거나 이미 종료되었습니다.",
+                );
+              }
+            },
+      child: Container(
+        height: 50,
+        decoration: BoxDecoration(
+          color: state.isStopLoading ? Colors.grey : Colors.red,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Center(
+          child: state.isStopLoading
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
+                )
+              : const Text(
+                  "자동 포스팅 중단",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+        ),
+      ),
+    );
+  }
+
+  void _showResultDialog(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("확인"),
+          ),
+        ],
       ),
     );
   }
