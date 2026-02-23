@@ -50,6 +50,7 @@ class MainViewModel extends Notifier<MainState> {
       userPassword: userPassword,
       postingCount: state.distributionType == DistributionType.auto ? 5 : 0,
       isPostingCheck: false,
+      userBlogId: '',
       proxy_id: '',
       proxy_pw: '',
       port: '',
@@ -60,6 +61,14 @@ class MainViewModel extends Notifier<MainState> {
 
     print("✅ 계정 추가 성공: $userId");
     return 0; // 성공적으로 추가됨
+  }
+
+  void updateBlogId({required int index, required String id}) {
+    final newList = [...state.userInfoList];
+    // 해당 인덱스의 모델만 copyWith로 포트 번호 교체
+    newList[index] = newList[index].copyWith(userBlogId: id);
+
+    state = state.copyWith(userInfoList: newList);
   }
 
   void updateProxyId({required int index, required String id}) {
@@ -329,6 +338,11 @@ class MainViewModel extends Notifier<MainState> {
         if (user.postingCount <= 0) {
           return ValidationResult(false, "${i + 1}번째 계정의 포스팅 갯수를 입력해주세요.");
         }
+
+        if (user.userBlogId == "") {
+          return ValidationResult(false, "${i + 1}번째 계정의 네이버 블로그 아이디를 입력해주세요.");
+        }
+
         if (state.isProxySetting &&
             (user.proxy_id == "" || user.proxy_pw == "" || user.port == "")) {
           return ValidationResult(false, "${i + 1}번째 계정의 프록시 정보를 입력해주세요.");
@@ -338,6 +352,11 @@ class MainViewModel extends Notifier<MainState> {
 
     for (int i = 0; i < state.userInfoList.length; i++) {
       final user = state.userInfoList[i];
+
+      if (user.userBlogId == "") {
+        return ValidationResult(false, "${i + 1}번째 계정의 네이버 블로그 아이디를 입력해주세요.");
+      }
+
       if (state.isProxySetting &&
           (user.proxy_id == "" || user.proxy_pw == "" || user.port == "")) {
         return ValidationResult(false, "${i + 1}번째 계정의 프록시 정보를 입력해주세요.");
@@ -642,6 +661,7 @@ class MainViewModel extends Notifier<MainState> {
           userPassword: data['login_pw'] ?? "",
           postingCount: state.distributionType == DistributionType.auto ? 5 : 0,
           isPostingCheck: true,
+          userBlogId: data['blog_id'] ?? "",
           proxy_id: data['proxy_id'] ?? "",
           proxy_pw: data['proxy_pw'] ?? "",
           port: data['proxy_port'] ?? "",

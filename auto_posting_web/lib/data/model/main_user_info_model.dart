@@ -4,6 +4,7 @@ class MainUserInfoModel {
   final String userId;
   final String userPassword;
   final int postingCount;
+  final String userBlogId;
   final String proxy_id;
   final String proxy_pw;
   final String port;
@@ -14,6 +15,7 @@ class MainUserInfoModel {
     required this.userPassword,
     required this.postingCount,
     required this.isPostingCheck,
+    required this.userBlogId,
     required this.proxy_id,
     required this.proxy_pw,
     required this.port,
@@ -25,6 +27,7 @@ class MainUserInfoModel {
     String? userId,
     String? userPassword,
     int? postingCount,
+    String? userBlogId,
     String? proxy_id,
     String? proxy_pw,
     String? port,
@@ -35,6 +38,7 @@ class MainUserInfoModel {
       userPassword: userPassword ?? this.userPassword,
       postingCount: postingCount ?? this.postingCount,
       isPostingCheck: isPostingCheck ?? this.isPostingCheck,
+      userBlogId: userBlogId ?? this.userBlogId,
       proxy_id: proxy_id ?? this.proxy_id,
       proxy_pw: proxy_pw ?? this.proxy_pw,
       port: port ?? this.port,
@@ -47,6 +51,7 @@ class MainUserInfoModel {
     "external_id": userId,
     "external_pw": userPassword,
     "postingCount": postingCount,
+    "blog_id": userBlogId,
     "proxy_id": proxy_id,
     "proxy_pw": proxy_pw,
     "port": port,
