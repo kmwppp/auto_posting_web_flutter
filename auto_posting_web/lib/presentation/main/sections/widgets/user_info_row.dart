@@ -80,7 +80,7 @@ class UserInfoRow extends ConsumerWidget {
             ),
           ],
         ),
-        // if (state.isProxySetting)
+        Divider(),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -177,6 +177,7 @@ class UserInfoRow extends ConsumerWidget {
               ],
             ),
             SizedBox(height: 10),
+            Divider(),
             Text(
               "계정 프록시 설정",
               style: context.bodyLarge.copyWith(fontWeight: FontWeight.bold),
