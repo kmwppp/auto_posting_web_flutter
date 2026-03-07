@@ -20,6 +20,28 @@ class MainRemoteDataSource {
     return response.data;
   }
 
+  Future<dynamic> postUserHistoryDateList(String userId) async {
+    // URL을 직접 합쳐서 보냅니다.
+    final response = await _dio.post('$MAIN_SERVER/api/blog/redis/log/$userId');
+    return response.data;
+  }
+
+  Future<dynamic> postUserHistory(String userId, String date) async {
+    // URL을 직접 합쳐서 보냅니다.
+    final response = await _dio.post(
+      '$MAIN_SERVER/api/blog/redis/log/$userId/$date',
+    );
+    return response.data;
+  }
+
+  Future<dynamic> postNowUserHistory(String userId) async {
+    // URL을 직접 합쳐서 보냅니다.
+    final response = await _dio.post(
+      '$MAIN_SERVER/api/blog/redis/log/current/$userId',
+    );
+    return response.data;
+  }
+
   Future<dynamic> postStopWorking(String userId) async {
     // URL을 직접 합쳐서 보냅니다.
     // 결과: http://52.62.79.242/api/blog/posting

@@ -42,4 +42,19 @@ class MainRepositoryImpl implements MainRepository {
       loginId: loginId,
     );
   }
+
+  @override
+  Future<dynamic> getNowUserHistory(String userId) {
+    return _dataSource.postNowUserHistory(userId);
+  }
+
+  @override
+  Future<dynamic> getUserHistory(String userId, String date) {
+    return _dataSource.postUserHistory(userId, date);
+  }
+
+  @override
+  Future<dynamic> getUserHistoryDateList(String userId) {
+    return _dataSource.postUserHistoryDateList(userId);
+  }
 }

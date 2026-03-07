@@ -3,6 +3,8 @@ import 'package:auto_posting_web/presentation/login/data/data_source/login_remot
 import 'package:auto_posting_web/presentation/login/data/repositories/login_repository.dart';
 import 'package:auto_posting_web/presentation/login/data/repositories/login_repository_impl.dart';
 import 'package:auto_posting_web/presentation/login/domain/use_cases/send_login_data_use_case.dart';
+import 'package:auto_posting_web/presentation/main/domain/use_cases/get_user_history_date_list_use_case.dart';
+import 'package:auto_posting_web/presentation/main/domain/use_cases/get_user_now_history_list_use_case.dart';
 import 'package:auto_posting_web/presentation/register/data/repositories/regist_repository.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,6 +14,7 @@ import '../../presentation/main/data/repositories/main_repository.dart';
 import '../../presentation/main/data/repositories/main_repository_impl.dart';
 import '../../presentation/main/domain/use_cases/delete_credential_use_case.dart';
 import '../../presentation/main/domain/use_cases/get_blog_credentials_use_case.dart';
+import '../../presentation/main/domain/use_cases/get_user_history_list_use_case.dart';
 import '../../presentation/main/domain/use_cases/send_posting_data_use_case.dart';
 import '../../presentation/main/domain/use_cases/subscribe_log_use_case.dart';
 import '../../presentation/register/data/data_source/regist_remote_data_source.dart';
@@ -76,6 +79,21 @@ final registDataUseCaseProvider = Provider(
 // 내 네이버 아이디 가져오기
 final getCredentialsUseCaseProvider = Provider((ref) {
   return GetBlogCredentialsUseCase(ref.watch(mainRepositoryProvider));
+});
+
+// 내 히스토리 날짜 리스트 가져오기
+final getHistoryDataListUseCaseProvider = Provider((ref) {
+  return GetUserHistoryDateListUseCase(ref.watch(mainRepositoryProvider));
+});
+
+// 내 히스토리 날짜 리스트 가져오기
+final getHistoryListUseCaseProvider = Provider((ref) {
+  return GetUserHistoryListUseCase(ref.watch(mainRepositoryProvider));
+});
+
+// 현재 작업중인 히스토리 리스트 가져오기
+final getNowHistoryListUseCaseProvider = Provider((ref) {
+  return GetUserNowHistoryListUseCase(ref.watch(mainRepositoryProvider));
 });
 
 // 내 네이버 아이디 삭제

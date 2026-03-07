@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:auto_posting_web/data/model/blog_title_info_model.dart';
 import 'package:auto_posting_web/data/model/main_user_info_model.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/di/provider_container.dart';
@@ -405,7 +406,9 @@ class MainViewModel extends Notifier<MainState> {
   void _listenToLogs(String streamUrl) {
     print("🚀 [SSE] _listenToLogs 시작됨 - 전달받은 URL: $streamUrl");
     // 기존 로그 초기화
-    state = state.copyWith(logList: []);
+    if (!state.isRunning) {
+      state = state.copyWith(logList: []);
+    }
 
     // 기존 구독 취소 확인
     if (_logSubscription != null) {
@@ -489,6 +492,75 @@ class MainViewModel extends Notifier<MainState> {
     return false;
   }
 
+  Future<void> getNowHistoryList(int userId) async {
+    try {
+      final useCase = ref.read(getNowHistoryListUseCaseProvider);
+
+      // 1. userId를 String으로 변환하여 execute 호출
+      final dynamic response = await useCase.execute(userId.toString());
+
+      // 2. 리스폰스 데이터 검증 및 state 업데이트
+      if (response != null && response['status'] == 'success') {
+        // current_messages 키에서 리스트를 추출 (null일 경우 빈 리스트)
+        final List<dynamic> messageData = response['current_messages'] ?? [];
+
+        // String 리스트로 안전하게 변환
+        final List<String> fetchedLogs = messageData
+            .map((e) => e.toString())
+            .toList();
+
+        // 3. 상태 업데이트 (StateNotifier 또는 Notifier 기준)
+        // logList라는 필드가 state에 정의되어 있어야 합니다.
+        state = state.copyWith(logList: fetchedLogs);
+
+        debugPrint("✅ 실시간 로그 업데이트 완료: ${fetchedLogs.length}건");
+      }
+    } catch (e) {
+      debugPrint("❌ 실시간 로그 로드 실패: $e");
+    }
+  }
+
+  // userId를 int로 받아서 String으로 넘겨주는 로직
+  Future<List<String>> getHistoryDateList(int userId) async {
+    try {
+      final useCase = ref.read(getHistoryDataListUseCaseProvider);
+
+      // 1. userId를 String으로 변환하여 execute 호출
+      final dynamic response = await useCase.execute(userId.toString());
+
+      // 2. 리스폰스 구조 { "dates": [...] } 에서 리스트 추출
+      if (response != null && response['dates'] != null) {
+        return List<String>.from(response['dates']);
+      }
+      return ["작업한 로그가 없습니다."];
+    } catch (e) {
+      debugPrint("❌ 히스토리 로드 실패: $e");
+      return ["작업한 로그를 불러오는 중 오류가 발생하였습니다."];
+    }
+  }
+
+  Future<List<String>> getHistoryList(int userId, String date) async {
+    try {
+      final useCase = ref.read(getHistoryListUseCaseProvider);
+
+      // 1. userId를 String으로 변환하여 execute 호출
+      final dynamic response = await useCase.execute(userId.toString(), date);
+
+      // 2. 리스폰스 데이터 검증 및 message만 추출
+      if (response != null && response['logs'] != null) {
+        final List<dynamic> logs = response['logs'];
+
+        // map을 사용해서 message 필드만 String 리스트로 변환
+        return logs.map((log) => log['message']?.toString() ?? "").toList();
+      }
+
+      return [];
+    } catch (e) {
+      debugPrint("❌ 상세 로그 로드 실패 ($date): $e");
+      return [];
+    }
+  }
+
   Future<bool> postIsWorking(String userId) async {
     print("🔍 [StatusCheck] 유저 $userId 의 작업 상태 확인 시작");
     try {
@@ -509,6 +581,8 @@ class MainViewModel extends Notifier<MainState> {
       print("📊 [StatusCheck] 파싱 결과 - Status: $status, StreamUrl: $streamUrl");
 
       if (status == "working") {
+        await getNowHistoryList(int.parse(userId));
+
         // 1. 로그 리스트에 안내 문구 추가
         state = state.copyWith(
           logList: [...state.logList, "⏳ 기존 작업이 진행 중입니다. 연결을 시도합니다..."],

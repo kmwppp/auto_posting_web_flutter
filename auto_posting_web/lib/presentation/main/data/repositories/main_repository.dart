@@ -3,6 +3,12 @@ abstract class MainRepository {
 
   Future<dynamic> sendStopWorking(String userId);
 
+  Future<dynamic> getUserHistoryDateList(String userId);
+
+  Future<dynamic> getUserHistory(String userId, String date);
+
+  Future<dynamic> getNowUserHistory(String userId);
+
   Future<dynamic> sendIsWorking(String userId);
 
   Stream<String> getLogStream(String userId);

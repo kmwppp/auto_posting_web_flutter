@@ -185,6 +185,11 @@ class RunAndResultSection extends ConsumerWidget {
   Widget _buildResultLog(BuildContext context, WidgetRef ref) {
     // 1. ViewModel의 상태 중 logList만 감시합니다.
     final logList = ref.watch(mainViewModelProvider.select((s) => s.logList));
+    final isRunning = ref.watch(
+      mainViewModelProvider.select((s) => s.isRunning),
+    );
+
+    final notifier = ref.read(mainViewModelProvider.notifier);
 
     // 2. 자동 스크롤을 위한 컨트롤러 (StatefulWidget의 필드나 Provider로 관리하는 것이 좋지만,
     // 여기서는 위젯 내에서 사용할 수 있도록 예시를 구성합니다.)
@@ -200,7 +205,31 @@ class RunAndResultSection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("작업 결과 로그", style: context.bodyLarge),
+        Row(
+          spacing: 10,
+          children: [
+            Text("작업 결과 로그", style: context.bodyLarge),
+
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blueAccent, // 배경색
+                foregroundColor: Colors.white, // 글자색 및 아이콘 색상
+              ),
+              onPressed: () {
+                final authState = ref.read(authStateProvider);
+                final int? userIdInt = authState.userCurrentId;
+
+                _showModalBottomSheet(context, notifier, userIdInt);
+              },
+              child: Text(
+                "작업 로그 히스토리",
+                style: context.bodyLarge.copyWith(
+                  color: Colors.white,
+                ), // 텍스트 스타일에도 컬러 명시
+              ),
+            ),
+          ],
+        ),
         const SizedBox(height: 6),
         Container(
           width: double.infinity,
@@ -233,6 +262,196 @@ class RunAndResultSection extends ConsumerWidget {
                 ),
         ),
       ],
+    );
+  }
+
+  Future<dynamic> _showModalBottomSheet(
+    BuildContext context,
+    MainViewModel notifier,
+    int? userIdInt,
+  ) {
+    return showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => FractionallySizedBox(
+        heightFactor: 0.6,
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+          ),
+          child: Column(
+            children: [
+              const SizedBox(height: 15),
+              Container(width: 40, height: 4, color: Colors.grey[300]),
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 20),
+                child: Text(
+                  "작업 로그 히스토리",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+              Expanded(
+                child: FutureBuilder<List<String>>(
+                  // 11번 아이디 예시, 실제로는 변수를 넣으세요.
+                  future: notifier.getHistoryDateList(userIdInt!),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    final dates = snapshot.data ?? [];
+
+                    if (dates.isEmpty) {
+                      return const Center(child: Text("저장된 로그 날짜가 없습니다."));
+                    }
+
+                    return ListView.separated(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      itemCount: dates.length,
+                      separatorBuilder: (_, __) => const SizedBox(height: 10),
+                      itemBuilder: (context, index) {
+                        return ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 4,
+                          ),
+                          tileColor: Colors.blueAccent.withOpacity(0.05),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          leading: const Icon(
+                            Icons.history,
+                            color: Colors.blueAccent,
+                          ),
+                          title: Text(
+                            dates[index],
+                            style: const TextStyle(fontWeight: FontWeight.w500),
+                          ),
+                          trailing: const Icon(Icons.chevron_right),
+                          onTap: () {
+                            // 1. 날짜 선택 팝업 닫기
+                            Navigator.pop(context);
+
+                            // 2. 상세 메시지 리스트 팝업 띄우기
+                            _historyList(
+                              context,
+                              dates,
+                              index,
+                              notifier,
+                              userIdInt,
+                            );
+                          },
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<dynamic> _historyList(
+    BuildContext context,
+    List<String> dates,
+    int index,
+    MainViewModel notifier,
+    int userIdInt,
+  ) {
+    return showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) => FractionallySizedBox(
+        heightFactor: 0.8,
+        // 상세 로그는 좀 더 길게(80%) 보여주는 게 좋습니다.
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+          ),
+          child: Column(
+            children: [
+              const SizedBox(height: 15),
+              Container(width: 40, height: 4, color: Colors.grey[300]),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 20,
+                  horizontal: 16,
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.event_note, color: Colors.blueAccent),
+                    const SizedBox(width: 8),
+                    Text(
+                      "${dates[index]} 상세 로그",
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Divider(height: 1),
+              Expanded(
+                child: FutureBuilder<List<String>>(
+                  // 뷰모델의 상세 로그 조회 함수 호출
+                  future: notifier.getHistoryList(userIdInt!, dates[index]),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    final messages = snapshot.data ?? [];
+
+                    if (messages.isEmpty) {
+                      return const Center(child: Text("해당 날짜에 기록된 메시지가 없습니다."));
+                    }
+
+                    return ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: messages.length,
+                      itemBuilder: (context, mIndex) {
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "• ",
+                                style: TextStyle(
+                                  color: Colors.blueAccent,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  messages[mIndex],
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    height: 1.4,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
