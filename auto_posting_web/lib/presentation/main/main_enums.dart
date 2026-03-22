@@ -38,7 +38,9 @@ extension AIPhotoTypeExtension on AIPhotoType {
   }
 }
 
-enum PostingType { immediately, reservation }
+enum PostingTermType { immediately, reservation }
+
+enum PostingType { publication, storage }
 
 /// 1. 프록시 설정을 정말 안할건지
 /// 2. 계정이 추가되지 않았을때

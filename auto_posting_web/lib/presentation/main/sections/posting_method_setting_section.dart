@@ -14,6 +14,9 @@ class PostingMethodSettingSection extends ConsumerWidget {
     final postingType = ref.watch(
       mainViewModelProvider.select((s) => s.postingType),
     );
+    final postingTermType = ref.watch(
+      mainViewModelProvider.select((s) => s.postingTermType),
+    );
     final postingCycleController = ref.watch(postingCycleControllerProvider);
     final notifier = ref.read(mainViewModelProvider.notifier);
     return SizedBox(
@@ -23,28 +26,51 @@ class PostingMethodSettingSection extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("발행 주기 (분)", style: context.bodyLarge),
-            SizedBox(height: 6),
-            _input(
-              context: context,
-              inputHint: "Ex) 30",
-              controller: postingCycleController,
-              align: Alignment.center,
-            ),
-            SizedBox(height: 4),
-            Text("여러 글을 발행할 경우, 설정된 시간 간격으로 순차 발행/예약됩니다."),
-            SizedBox(height: 20),
             CommonRadioGroup<PostingType>(
               groupValue: postingType,
               items: [
-                CommonRadioItem(
-                  label: '즉시 발행 시작',
-                  value: PostingType.immediately,
-                ),
-                CommonRadioItem(label: '예약 발행', value: PostingType.reservation),
+                CommonRadioItem(label: '발행', value: PostingType.publication),
+                CommonRadioItem(label: '임시 저장', value: PostingType.storage),
               ],
               onChanged: (value) => notifier.changePostingType(value),
             ),
+
+            SizedBox(height: 10),
+
+            if (postingType == PostingType.storage)
+              Text("임시 저장은 3~5분 사이 간격으로 저장됩니다."),
+
+            if (postingType == PostingType.publication)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("발행 주기 (분)", style: context.bodyLarge),
+                  SizedBox(height: 6),
+                  _input(
+                    context: context,
+                    inputHint: "Ex) 30",
+                    controller: postingCycleController,
+                    align: Alignment.center,
+                  ),
+                  SizedBox(height: 4),
+                  Text("여러 글을 발행할 경우, 설정된 시간 간격으로 순차 발행/예약됩니다."),
+                  SizedBox(height: 20),
+                  CommonRadioGroup<PostingTermType>(
+                    groupValue: postingTermType,
+                    items: [
+                      CommonRadioItem(
+                        label: '즉시 발행 시작',
+                        value: PostingTermType.immediately,
+                      ),
+                      CommonRadioItem(
+                        label: '예약 발행',
+                        value: PostingTermType.reservation,
+                      ),
+                    ],
+                    onChanged: (value) => notifier.changePostingTermType(value),
+                  ),
+                ],
+              ),
           ],
         ),
       ),

@@ -32,6 +32,7 @@ class MainState {
   final double aiImgCount;
   final AIPhotoType selectedImageStyle;
   final PostingType postingType;
+  final PostingTermType postingTermType;
   final List<BlogTitleInfoModel> titleKeywordList;
   final List<BlogTitleUrlInfoModel> titleUrlList;
 
@@ -53,6 +54,7 @@ class MainState {
     required this.aiImgCount,
     required this.selectedImageStyle,
     required this.postingType,
+    required this.postingTermType,
     required this.titleKeywordList,
     required this.titleUrlList,
     required this.logList,
@@ -74,6 +76,7 @@ class MainState {
     double? aiImgCount,
     AIPhotoType? selectedImageStyle,
     PostingType? postingType,
+    PostingTermType? postingTermType,
     List<BlogTitleInfoModel>? titleKeywordList,
     List<BlogTitleUrlInfoModel>? titleUrlList,
     List<String>? logList,
@@ -94,6 +97,7 @@ class MainState {
       aiImgCount: aiImgCount ?? this.aiImgCount,
       selectedImageStyle: selectedImageStyle ?? this.selectedImageStyle,
       postingType: postingType ?? this.postingType,
+      postingTermType: postingTermType ?? this.postingTermType,
       titleKeywordList: titleKeywordList ?? this.titleKeywordList,
       titleUrlList: titleUrlList ?? this.titleUrlList,
       logList: logList ?? this.logList,
@@ -116,7 +120,8 @@ class MainState {
       isQRLinkChange: true,
       aiImgCount: 0,
       selectedImageStyle: AIPhotoType.photoRealistic,
-      postingType: PostingType.immediately,
+      postingType: PostingType.publication,
+      postingTermType: PostingTermType.immediately,
       titleKeywordList: [],
       titleUrlList: [],
       logList: [],

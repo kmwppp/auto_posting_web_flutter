@@ -164,11 +164,17 @@ class MainViewModel extends Notifier<MainState> {
     if (state.postTitleType == PostTitleType.keyword) {
       final keywords = first
           .split('\n')
-          .where((s) => s.trim().isNotEmpty)
+          .where((s) =>
+      s
+          .trim()
+          .isNotEmpty)
           .toList();
       final titles = second
           .split('\n')
-          .where((s) => s.trim().isNotEmpty)
+          .where((s) =>
+      s
+          .trim()
+          .isNotEmpty)
           .toList();
 
       final list = [...state.titleKeywordList];
@@ -191,9 +197,15 @@ class MainViewModel extends Notifier<MainState> {
     } else {
       final title = first
           .split('\n')
-          .where((s) => s.trim().isNotEmpty)
+          .where((s) =>
+      s
+          .trim()
+          .isNotEmpty)
           .toList();
-      final url = second.split('\n').where((s) => s.trim().isNotEmpty).toList();
+      final url = second.split('\n').where((s) =>
+      s
+          .trim()
+          .isNotEmpty).toList();
 
       final list = [...state.titleUrlList];
 
@@ -313,6 +325,10 @@ class MainViewModel extends Notifier<MainState> {
     state = state.copyWith(postingType: type);
   }
 
+  void changePostingTermType(PostingTermType type) {
+    state = state.copyWith(postingTermType: type);
+  }
+
   bool isChkProxy() {
     return state.isProxySetting;
   }
@@ -365,12 +381,20 @@ class MainViewModel extends Notifier<MainState> {
     }
 
     // 3. 워드프레스 URL
-    if (ref.read(wordpressURLControllerProvider).text.trim().isEmpty) {
+    if (ref
+        .read(wordpressURLControllerProvider)
+        .text
+        .trim()
+        .isEmpty) {
       return ValidationResult(false, "워드프레스 사이트 URL을 입력해주세요.");
     }
 
     // 3-1. 링크 상단 문구
-    if (ref.read(linkTopTextControllerProvider).text.trim().isEmpty) {
+    if (ref
+        .read(linkTopTextControllerProvider)
+        .text
+        .trim()
+        .isEmpty) {
       return ValidationResult(false, "링크 상단 문구를 입력해주세요.");
     }
 
@@ -387,14 +411,18 @@ class MainViewModel extends Notifier<MainState> {
 
     // 5. 발행 주기
     final term =
-        int.tryParse(ref.read(postingCycleControllerProvider).text) ?? 0;
-    if (term <= 0) {
-      return ValidationResult(false, "올바른 발행 주기를 입력해주세요.");
-    }
+        int.tryParse(ref
+            .read(postingCycleControllerProvider)
+            .text) ?? 0;
+    if (state.postingType == PostingType.publication) {
+      if (term <= 0) {
+        return ValidationResult(false, "올바른 발행 주기를 입력해주세요.");
+      }
 
-    if (state.userInfoList[0].userId != "v2v2kmw") {
-      if (term < 15) {
-        return ValidationResult(false, "네이버 최적화를 위하여 15분이상으로 세팅해주세요.");
+      if (state.userInfoList[0].userId != "v2v2kmw") {
+        if (term < 5) {
+          return ValidationResult(false, "네이버 최적화를 위하여 5분이상으로 세팅해주세요.");
+        }
       }
     }
 
@@ -425,28 +453,28 @@ class MainViewModel extends Notifier<MainState> {
         .execute(streamUrl)
         .listen(
           (newLog) {
-            print("📩 [SSE 수신 데이터]: $newLog");
-            // 2. 서버에서 보낸 "close" 이벤트 감지 (데이터 포맷에 따라 조건문 조정 필요)
-            if (newLog.contains("close") || newLog.contains("작업이 모두 완료되었습니다")) {
-              print("✅ 모든 작업 완료 신호 수신. 스트림을 닫습니다.");
-              _closeStream(); // 스트림 종료 함수 호출
-              return;
-            }
+        print("📩 [SSE 수신 데이터]: $newLog");
+        // 2. 서버에서 보낸 "close" 이벤트 감지 (데이터 포맷에 따라 조건문 조정 필요)
+        if (newLog.contains("close") || newLog.contains("작업이 모두 완료되었습니다")) {
+          print("✅ 모든 작업 완료 신호 수신. 스트림을 닫습니다.");
+          _closeStream(); // 스트림 종료 함수 호출
+          return;
+        }
 
-            if (newLog.isNotEmpty) {
-              state = state.copyWith(logList: [...state.logList, newLog]);
-            }
-          },
-          onError: (error) {
-            print("SSE 에러 발생: $error");
-            state = state.copyWith(
-              logList: [...state.logList, "연결 에러 발생: $error"],
-            );
-          },
-          onDone: () {
-            print("📡 서버에 의해 스트림이 완전히 닫혔습니다.");
-          },
+        if (newLog.isNotEmpty) {
+          state = state.copyWith(logList: [...state.logList, newLog]);
+        }
+      },
+      onError: (error) {
+        print("SSE 에러 발생: $error");
+        state = state.copyWith(
+          logList: [...state.logList, "연결 에러 발생: $error"],
         );
+      },
+      onDone: () {
+        print("📡 서버에 의해 스트림이 완전히 닫혔습니다.");
+      },
+    );
   }
 
   // 3. 스트림을 안전하게 닫는 함수
@@ -619,12 +647,22 @@ class MainViewModel extends Notifier<MainState> {
     state = state.copyWith(isLoading: true);
 
     // 1. 데이터 준비 (생략되지 않도록 유지)
-    final proxyUrl = ref.read(proxyUrlControllerProvider).text;
-    final siteUrl = ref.read(wordpressURLControllerProvider).text;
-    final linkTopText = ref.read(linkTopTextControllerProvider).text;
-    final aiWriteRole = ref.read(aiwriteOrderControllerProvider).text;
+    final proxyUrl = ref
+        .read(proxyUrlControllerProvider)
+        .text;
+    final siteUrl = ref
+        .read(wordpressURLControllerProvider)
+        .text;
+    final linkTopText = ref
+        .read(linkTopTextControllerProvider)
+        .text;
+    final aiWriteRole = ref
+        .read(aiwriteOrderControllerProvider)
+        .text;
     final postingTerm =
-        int.tryParse(ref.read(postingCycleControllerProvider).text) ?? 0;
+        int.tryParse(ref
+            .read(postingCycleControllerProvider)
+            .text) ?? 0;
 
     final Map<String, dynamic> requestData = {
       "proxy": proxyUrl,
@@ -641,8 +679,9 @@ class MainViewModel extends Notifier<MainState> {
       "postURLTitleList": state.titleUrlList.map((e) => e.toJson()).toList(),
       "autoChangeQRLink": state.isQRLinkChange,
       "aiWriteRole": aiWriteRole,
+      "postingType": state.postingType.name,
       "postingTerm": postingTerm,
-      "postingTermType": state.postingType.name,
+      "postingTermType": state.postingTermType.name,
     };
 
     try {
@@ -743,11 +782,17 @@ class MainViewModel extends Notifier<MainState> {
       }).toList();
 
       // 3. 컨트롤러(Provider) 값 업데이트 (State 대신 컨트롤러에 직접 기입)
-      ref.read(proxyUrlControllerProvider).text = saveInfo['ip'] ?? "";
-      ref.read(wordpressURLControllerProvider).text = saveInfo['wp_url'] ?? "";
+      ref
+          .read(proxyUrlControllerProvider)
+          .text = saveInfo['ip'] ?? "";
+      ref
+          .read(wordpressURLControllerProvider)
+          .text = saveInfo['wp_url'] ?? "";
 
       final String comment = saveInfo['link_comment'] ?? "";
-      ref.read(linkTopTextControllerProvider).text = comment.isEmpty
+      ref
+          .read(linkTopTextControllerProvider)
+          .text = comment.isEmpty
           ? "자세한 정보는 아래에서 확인해보세요."
           : comment;
 
