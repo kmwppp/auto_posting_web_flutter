@@ -14,6 +14,14 @@ class App extends ConsumerWidget {
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       routerConfig: router, // 전역 goRouter 대신 프로바이더의 router 사용
+      theme: ThemeData(
+        scaffoldBackgroundColor: Colors.white, // 모든 기본 배경
+        canvasColor: Colors.white, // Drawer / Dialog 배경
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          background: Colors.white,
+        ),
+      ),
     );
   }
 }

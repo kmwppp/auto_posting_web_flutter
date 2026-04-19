@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../main_provider.dart';
-import 'input_widget.dart';
 
 class BlogInfoColumn extends ConsumerWidget {
   const BlogInfoColumn({super.key});
@@ -16,44 +15,83 @@ class BlogInfoColumn extends ConsumerWidget {
     final blogTitleController = ref.watch(blogTitleControllerProvider);
     final notifier = ref.read(mainViewModelProvider.notifier);
 
+    // 타입에 따른 힌트 텍스트 분기
+    final String firstHint = state.postTitleType == PostTitleType.keyword
+        ? "메인 키워드"
+        : "블로그 제목";
+    final String secondHint = state.postTitleType == PostTitleType.keyword
+        ? "블로그 제목"
+        : "URL";
+
     return Column(
-      spacing: 10,
       children: [
-        InputWidget(
-          inputHint: state.postTitleType == PostTitleType.keyword
-              ? "메인 키워드"
-              : "블로그 제목",
+        _input(
+          context: context,
+          inputHint: firstHint,
           controller: mainKeyController,
         ),
-        InputWidget(
-          inputHint: state.postTitleType == PostTitleType.keyword
-              ? "블로그 제목"
-              : "URL",
+        const SizedBox(height: 12),
+        _input(
+          context: context,
+          inputHint: secondHint,
           controller: blogTitleController,
         ),
-        GestureDetector(
-          onTap: () {
-            notifier.addBlogInfoSingle(
-              first: mainKeyController.text,
-              second: blogTitleController.text,
-            );
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.circular(4),
+        const SizedBox(height: 16),
+
+        // 추가 버튼 (Beanz 테마 적용)
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blueGrey[800],
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
+              elevation: 0,
             ),
-            width: double.infinity,
-            height: 50,
-            alignment: Alignment.center,
-            child: Text(
+            onPressed: () {
+              notifier.addBlogInfoSingle(
+                first: mainKeyController.text,
+                second: blogTitleController.text,
+              );
+            },
+            child: const Text(
               "글 내용 추가",
-              textAlign: TextAlign.center,
-              style: AppTextStyles.titleMedium.copyWith(color: Colors.white),
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
         ),
       ],
+    );
+  }
+
+  // --- 통일된 입력 폼 스타일 ---
+  Widget _input({
+    required BuildContext context,
+    required String inputHint,
+    required TextEditingController controller,
+  }) {
+    return Container(
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.black12),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      alignment: Alignment.centerLeft,
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          isDense: true,
+          border: InputBorder.none,
+          hintText: inputHint,
+          hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+        ),
+        style: context.body,
+      ),
     );
   }
 }

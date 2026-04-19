@@ -1,11 +1,12 @@
 import 'package:auto_posting_web/presentation/admin/admin_page.dart';
+import 'package:auto_posting_web/presentation/navigation/navigation_page.dart';
 import 'package:auto_posting_web/presentation/register/register_page.dart';
+import 'package:auto_posting_web/presentation/wordpress/presentation/screens/wordpress_page.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../presentation/description/proxy_description_page.dart';
 import '../presentation/login/login_page.dart';
-import '../presentation/main/main_page.dart';
 import 'auth_provider.dart';
 
 final goRouterProvider = Provider<GoRouter>((ref) {
@@ -53,7 +54,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/register',
         builder: (context, state) => const RegisterPage(),
       ),
-      GoRoute(path: '/main', builder: (context, state) => const MainPage()),
+      GoRoute(
+        path: '/main',
+        builder: (context, state) => const NavigationPage(),
+      ),
       GoRoute(
         path: '/admin/main',
         builder: (context, state) => const AdminPage(),
@@ -61,6 +65,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/proxy_description',
         builder: (context, state) => const ProxyDescriptionPage(),
+      ),
+      GoRoute(
+        path: '/wordpress',
+        builder: (context, state) => const WordpressPage(),
       ),
     ],
   );

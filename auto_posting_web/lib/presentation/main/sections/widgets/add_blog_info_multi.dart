@@ -1,21 +1,26 @@
 import 'package:auto_posting_web/presentation/main/sections/widgets/blog_info_row.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../../core/theme/app_text_styles.dart';
-
 class AddBlogInfoMulti extends StatelessWidget {
   const AddBlogInfoMulti({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      spacing: 10,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        SizedBox(height: 10),
-        Text("새 메인키워드 및 제목 추가", style: context.bodyLarge),
-        BlogInfoRow(),
+        const SizedBox(height: 16),
+        _label("새 메인키워드 및 제목 일괄 추가"),
+        const BlogInfoRow(),
       ],
     );
   }
+
+  Widget _label(String text) => Padding(
+    padding: const EdgeInsets.only(bottom: 12.0),
+    child: Text(
+      text,
+      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+    ),
+  );
 }

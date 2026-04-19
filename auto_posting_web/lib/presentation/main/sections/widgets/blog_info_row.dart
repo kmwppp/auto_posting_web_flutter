@@ -18,25 +18,26 @@ class BlogInfoRow extends ConsumerWidget {
     return Column(
       children: [
         Row(
-          spacing: 10,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: _input(
                 context: context,
                 inputHint: state.postTitleType == PostTitleType.keyword
-                    ? "메인 키워드"
-                    : "블로그 제목",
+                    ? "메인 키워드 (줄바꿈으로 구분)"
+                    : "블로그 제목 (줄바꿈으로 구분)",
                 controller: mainKeyController,
                 align: Alignment.topLeft,
                 boxHeight: 300,
               ),
             ),
+            const SizedBox(width: 12), // 간격 통일
             Expanded(
               child: _input(
                 context: context,
                 inputHint: state.postTitleType == PostTitleType.keyword
-                    ? "블로그 제목"
-                    : "URL",
+                    ? "블로그 제목 (줄바꿈으로 구분)"
+                    : "URL (줄바꿈으로 구분)",
                 controller: blogTitleController,
                 align: Alignment.topLeft,
                 boxHeight: 300,
@@ -44,26 +45,30 @@ class BlogInfoRow extends ConsumerWidget {
             ),
           ],
         ),
-        SizedBox(height: 20),
-        GestureDetector(
-          onTap: () {
-            notifier.addBlogInfoMulti(
-              first: mainKeyController.text,
-              second: blogTitleController.text,
-            );
-          },
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.blue,
-              borderRadius: BorderRadius.circular(4),
+        const SizedBox(height: 20),
+
+        // 추가 버튼 (Beanz 테마 스타일)
+        SizedBox(
+          width: double.infinity,
+          height: 50,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blueGrey[800],
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
+              elevation: 0,
             ),
-            width: double.infinity,
-            height: 50,
-            alignment: Alignment.center,
-            child: Text(
-              "글 내용 추가",
-              textAlign: TextAlign.center,
-              style: AppTextStyles.titleMedium.copyWith(color: Colors.white),
+            onPressed: () {
+              notifier.addBlogInfoMulti(
+                first: mainKeyController.text,
+                second: blogTitleController.text,
+              );
+            },
+            child: const Text(
+              "글 내용 일괄 추가",
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
         ),
@@ -71,6 +76,7 @@ class BlogInfoRow extends ConsumerWidget {
     );
   }
 
+  // --- 통일된 멀티라인 입력 폼 스타일 ---
   Widget _input({
     required BuildContext context,
     required String inputHint,
@@ -78,31 +84,25 @@ class BlogInfoRow extends ConsumerWidget {
     double boxHeight = 0,
     required AlignmentGeometry align,
   }) {
-    // 높이가 설정되어 있다면 여러 줄 입력 모드로 간주합니다.
     final isMultiLine = boxHeight > 0;
 
     return Container(
-      height: isMultiLine ? boxHeight : null,
+      height: isMultiLine ? boxHeight : 50,
       decoration: BoxDecoration(
         color: Colors.white,
-        // BoxBorder.all 대신 Border.all을 사용해야 에러가 나지 않습니다.
-        border: Border.all(color: Colors.black),
+        border: Border.all(color: Colors.black12), // 연한 테두리로 변경
         borderRadius: BorderRadius.circular(4),
       ),
       alignment: align,
       padding: const EdgeInsets.all(14),
       child: TextField(
         controller: controller,
-        // 1. 엔터 키를 줄바꿈으로 동작하게 만드는 핵심 설정
         maxLines: isMultiLine ? null : 1,
         minLines: isMultiLine ? null : 1,
-        // 2. 컨테이너 높이에 맞춰 텍스트 필드를 확장 (isMultiLine일 때만)
         expands: isMultiLine,
-        // 3. 멀티라인용 키보드 타입 설정
         keyboardType: isMultiLine
             ? TextInputType.multiline
             : TextInputType.text,
-        // 4. 높은 박스일 경우 텍스트 시작 위치를 상단으로 고정
         textAlignVertical: isMultiLine
             ? TextAlignVertical.top
             : TextAlignVertical.center,
@@ -110,8 +110,9 @@ class BlogInfoRow extends ConsumerWidget {
           isDense: true,
           border: InputBorder.none,
           hintText: inputHint,
+          hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
         ),
-        style: context.bodyLarge,
+        style: context.body, // 기존 bodyLarge에서 통일된 body 스타일로 변경
       ),
     );
   }

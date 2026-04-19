@@ -24,29 +24,60 @@ class CommonRadioGroup<T> extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: items.map((item) {
+        final bool isSelected = groupValue == item.value;
+
         return Expanded(
-          child: InkWell(
-            // 1. 클릭 시 물결 효과가 둥글게 퍼지도록 설정 (선택사항)
-            borderRadius: BorderRadius.circular(8),
-            // 2. 전체 Row 클릭 시 onChanged 호출
-            onTap: () => onChanged(item.value),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                vertical: 8.0,
-                horizontal: 4.0,
-              ), // 클릭 영역 확보
-              child: Row(
-                children: [
-                  Radio<T>(
-                    value: item.value,
-                    groupValue: groupValue,
-                    onChanged: (value) {
-                      if (value != null) onChanged(value);
-                    },
+          child: Padding(
+            padding: const EdgeInsets.only(right: 8.0), // 아이템 간 간격
+            child: InkWell(
+              onTap: () => onChanged(item.value),
+              borderRadius: BorderRadius.circular(4),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 10,
+                  horizontal: 12,
+                ),
+                decoration: BoxDecoration(
+                  // 선택 시 연한 배경색, 미선택 시 흰색
+                  color: isSelected ? Colors.blueGrey[50] : Colors.white,
+                  border: Border.all(
+                    // 선택 시 진한 테두리, 미선택 시 연한 테두리
+                    color: isSelected ? Colors.blueGrey[800]! : Colors.black12,
+                    width: isSelected ? 1.5 : 1,
                   ),
-                  // 3. 텍스트 영역도 클릭 범위에 포함됨
-                  Text(item.label, style: context.bodyLarge),
-                ],
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: Radio<T>(
+                        value: item.value,
+                        groupValue: groupValue,
+                        // Beanz 테마 컬러 적용
+                        activeColor: Colors.blueGrey[800],
+                        onChanged: (value) {
+                          if (value != null) onChanged(value);
+                        },
+                        visualDensity: VisualDensity.compact,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      item.label,
+                      style: context.body.copyWith(
+                        color: isSelected
+                            ? Colors.blueGrey[900]
+                            : Colors.grey[700],
+                        fontWeight: isSelected
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

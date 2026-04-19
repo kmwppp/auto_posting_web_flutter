@@ -1,4 +1,3 @@
-import 'package:auto_posting_web/presentation/main/sections/widgets/input_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -11,81 +10,135 @@ class InsertProxy extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 1. 상태 읽기 (isAiEnabled만 감시)
-    final isProxySetting = ref.watch(
-      mainViewModelProvider.select((s) => s.isProxySetting),
-    );
-
     final proxyController = ref.watch(proxyUrlControllerProvider);
-    final notifier = ref.read(mainViewModelProvider.notifier);
+    // final notifier = ref.read(mainViewModelProvider.notifier); // 필요 시 사용
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  Text(
-                    "프록시 설정",
-                    style: context.bodyLarge.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(width: 20),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(100),
-                    child: Container(
-                      width: 30,
-                      height: 30,
-                      alignment: Alignment.center,
-                      color: Colors.blueAccent,
-                      child: IconButton(
-                        onPressed: () {
-                          context.push("/proxy_description");
-                        },
-                        icon: Icon(
-                          Icons.question_mark,
-                          color: Colors.white,
-                          size: 15,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+        // 섹션 타이틀 (WordpressPage 스타일 적용)
+        _sectionTitle(
+          context: context,
+          title: "프록시 설정",
+          trailing: _helpButton(context),
+        ),
+
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _label("구매하신 프록시 IP 입력"),
+              _input(
+                context: context,
+                inputHint: "프록시 IP를 입력하세요.",
+                controller: proxyController,
+                align: Alignment.centerLeft,
               ),
-            ),
-
-            // 2. Switch 위젯 배치
-            // Switch(
-            //   value: isProxySetting,
-            //   activeColor: Colors.blueAccent, // 켜졌을 때 색상
-            //   onChanged: (value) {
-            //     // 3. 상태 변경 요청
-            //     notifier.changeIsProxySetting(value);
-            //   },
-            // ),
-          ],
+              const SizedBox(height: 8),
+              Text(
+                "프록시 IP는 발행 시 자동으로 저장되며, 변동될 경우 자동으로 갱신됩니다.",
+                style: context.body.copyWith(color: Colors.grey, fontSize: 12),
+              ),
+            ],
+          ),
         ),
-
-        // if (isProxySetting)
-        Column(
-          spacing: 8,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 8),
-            Text(
-              "구매하신 프록시의 IP를 입력하세요.\n프록시 IP는 발행시 자동으로 저장되며 변동될 경우 자동으로 변경하여 저장합니다.",
-              style: context.body.copyWith(color: Colors.grey),
-            ),
-            InputWidget(
-              inputHint: "프록시 IP을 입력하세요.",
-              controller: proxyController,
-            ),
-          ],
-        ),
+        const SizedBox(height: 14),
       ],
+    );
+  }
+
+  // 도움말 버튼 (물음표 아이콘)
+  Widget _helpButton(BuildContext context) {
+    return InkWell(
+      onTap: () => context.push("/proxy_description"),
+      child: Container(
+        width: 24,
+        height: 24,
+        decoration: const BoxDecoration(
+          color: Colors.blueAccent,
+          shape: BoxShape.circle,
+        ),
+        child: const Icon(Icons.question_mark, color: Colors.white, size: 14),
+      ),
+    );
+  }
+
+  // --- Wordpress 섹션 스타일 헬퍼 메서드 ---
+
+  Widget _sectionTitle({
+    required BuildContext context,
+    required String title,
+    Widget? trailing,
+  }) {
+    return Container(
+      alignment: Alignment.centerLeft,
+      width: double.infinity,
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.blueGrey[50],
+        border: Border(
+          left: BorderSide(color: Colors.blueGrey[800]!, width: 6),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              title,
+              style: context.title.copyWith(color: Colors.blueGrey[900]),
+            ),
+            if (trailing != null) trailing,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _label(String text) => Padding(
+    padding: const EdgeInsets.only(bottom: 8.0),
+    child: Text(
+      text,
+      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+    ),
+  );
+
+  Widget _input({
+    required BuildContext context,
+    required String inputHint,
+    TextEditingController? controller,
+    Function(String)? onChanged,
+    double boxHeight = 0,
+    required AlignmentGeometry align,
+  }) {
+    final isMultiLine = boxHeight > 0;
+    return Container(
+      height: isMultiLine ? boxHeight : null,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.black12),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      alignment: align,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      child: TextField(
+        controller: controller,
+        onChanged: onChanged,
+        maxLines: isMultiLine ? null : 1,
+        minLines: isMultiLine ? null : 1,
+        expands: isMultiLine,
+        textAlignVertical: isMultiLine
+            ? TextAlignVertical.top
+            : TextAlignVertical.center,
+        decoration: InputDecoration(
+          isDense: true,
+          border: InputBorder.none,
+          hintText: inputHint,
+          hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
+        ),
+        style: context.body,
+      ),
     );
   }
 }

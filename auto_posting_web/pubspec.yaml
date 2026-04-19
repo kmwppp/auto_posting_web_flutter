@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.10.4
+  sdk: '>=3.10.7 <4.0.0' # SDK 하한선을 현재 버전으로 고정
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -30,28 +30,23 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
-  flutter_riverpod: ^3.1.0
-  go_router: ^14.0.0
+  flutter_riverpod: ^2.5.1 # 3.x 대신 안정적인 2.x 사용
+  go_router: ^13.2.0
   shared_preferences: ^2.2.2
   dio: ^5.4.0
   url_launcher: ^6.3.2
   flutter_client_sse: ^2.0.3
+  freezed_annotation: ^2.4.4 # 안정 버전
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
-  flutter_lints: ^6.0.0
+  flutter_lints: ^3.0.0
+  build_runner: ^2.4.8
+  freezed: ^2.4.7 # 3.x 대신 현재 환경과 호환되는 2.x 사용
+  riverpod_generator: ^2.4.0 # 현재 환경과 호환되는 버전
+  riverpod_annotation: ^2.3.5
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

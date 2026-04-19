@@ -19,103 +19,157 @@ class PostingMethodSettingSection extends ConsumerWidget {
     );
     final postingCycleController = ref.watch(postingCycleControllerProvider);
     final notifier = ref.read(mainViewModelProvider.notifier);
-    return SizedBox(
-      width: double.infinity,
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CommonRadioGroup<PostingType>(
-              groupValue: postingType,
-              items: [
-                CommonRadioItem(label: '발행', value: PostingType.publication),
-                CommonRadioItem(label: '임시 저장', value: PostingType.storage),
-              ],
-              onChanged: (value) => notifier.changePostingType(value),
-            ),
 
-            SizedBox(height: 10),
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // 1. 섹션 타이틀
+          _sectionTitle(context: context, title: "발행 방식 설정"),
 
-            if (postingType == PostingType.storage)
-              Text("임시 저장은 3~5분 사이 간격으로 저장됩니다."),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // 2. 발행/저장 선택
+                _label("작업 유형"),
+                CommonRadioGroup<PostingType>(
+                  groupValue: postingType,
+                  items: [
+                    CommonRadioItem(
+                      label: '즉시 발행',
+                      value: PostingType.publication,
+                    ),
+                    CommonRadioItem(label: '임시 저장', value: PostingType.storage),
+                  ],
+                  onChanged: (value) => notifier.changePostingType(value),
+                ),
 
-            if (postingType == PostingType.publication)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text("발행 주기 (분)", style: context.bodyLarge),
-                  SizedBox(height: 6),
-                  _input(
-                    context: context,
-                    inputHint: "Ex) 30",
-                    controller: postingCycleController,
-                    align: Alignment.center,
-                  ),
-                  SizedBox(height: 4),
-                  Text("여러 글을 발행할 경우, 설정된 시간 간격으로 순차 발행/예약됩니다."),
-                  SizedBox(height: 20),
-                  CommonRadioGroup<PostingTermType>(
-                    groupValue: postingTermType,
-                    items: [
-                      CommonRadioItem(
-                        label: '즉시 발행 시작',
-                        value: PostingTermType.immediately,
+                const SizedBox(height: 16),
+
+                // 3. 타입별 상세 설정
+                if (postingType == PostingType.storage)
+                  _infoBox("임시 저장은 3~5분 사이의 랜덤한 간격으로 안전하게 저장됩니다.")
+                else if (postingType == PostingType.publication)
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _label("발행 주기 (분)"),
+                      _input(
+                        context: context,
+                        inputHint: "예: 30 (숫자만 입력)",
+                        controller: postingCycleController,
+                        align: Alignment.centerLeft,
                       ),
-                      CommonRadioItem(
-                        label: '예약 발행',
-                        value: PostingTermType.reservation,
+                      const SizedBox(height: 8),
+                      Text(
+                        "여러 글을 발행할 경우, 설정된 시간 간격으로 순차 발행/예약됩니다.",
+                        style: context.body.copyWith(
+                          color: Colors.blueGrey[400],
+                          fontSize: 12,
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+
+                      _label("발행 시점"),
+                      CommonRadioGroup<PostingTermType>(
+                        groupValue: postingTermType,
+                        items: [
+                          CommonRadioItem(
+                            label: '즉시 발행 시작',
+                            value: PostingTermType.immediately,
+                          ),
+                          CommonRadioItem(
+                            label: '예약 발행',
+                            value: PostingTermType.reservation,
+                          ),
+                        ],
+                        onChanged: (value) =>
+                            notifier.changePostingTermType(value),
                       ),
                     ],
-                    onChanged: (value) => notifier.changePostingTermType(value),
                   ),
-                ],
-              ),
-          ],
+              ],
+            ),
+          ),
+          const SizedBox(height: 14),
+        ],
+      ),
+    );
+  }
+
+  // --- 통일된 UI 컴포넌트 헬퍼 ---
+
+  Widget _sectionTitle({required BuildContext context, required String title}) {
+    return Container(
+      alignment: Alignment.centerLeft,
+      width: double.infinity,
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.blueGrey[50],
+        border: Border(
+          left: BorderSide(color: Colors.blueGrey[800]!, width: 6),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Text(
+          title,
+          style: context.title.copyWith(
+            color: Colors.blueGrey[900],
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ),
     );
   }
 
+  Widget _label(String text) => Padding(
+    padding: const EdgeInsets.only(bottom: 8.0),
+    child: Text(
+      text,
+      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+    ),
+  );
+
+  Widget _infoBox(String text) => Container(
+    width: double.infinity,
+    padding: const EdgeInsets.all(12),
+    decoration: BoxDecoration(
+      color: Colors.grey[50],
+      borderRadius: BorderRadius.circular(4),
+      border: Border.all(color: Colors.black12),
+    ),
+    child: Text(
+      text,
+      style: TextStyle(color: Colors.blueGrey[600], fontSize: 13),
+    ),
+  );
+
   Widget _input({
     required BuildContext context,
     required String inputHint,
     required TextEditingController controller,
-    double boxHeight = 0,
     required AlignmentGeometry align,
   }) {
-    // 높이가 설정되어 있다면 여러 줄 입력 모드로 간주합니다.
-    final isMultiLine = boxHeight > 0;
-
     return Container(
-      height: isMultiLine ? boxHeight : null,
+      height: 50,
       decoration: BoxDecoration(
         color: Colors.white,
-        // BoxBorder.all 대신 Border.all을 사용해야 에러가 나지 않습니다.
-        border: Border.all(color: Colors.black),
+        border: Border.all(color: Colors.black12),
         borderRadius: BorderRadius.circular(4),
       ),
       alignment: align,
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.symmetric(horizontal: 14),
       child: TextField(
         controller: controller,
-        // 1. 엔터 키를 줄바꿈으로 동작하게 만드는 핵심 설정
-        maxLines: isMultiLine ? null : 1,
-        minLines: isMultiLine ? null : 1,
-        // 2. 컨테이너 높이에 맞춰 텍스트 필드를 확장 (isMultiLine일 때만)
-        expands: isMultiLine,
-        // 3. 멀티라인용 키보드 타입 설정
-        keyboardType: isMultiLine
-            ? TextInputType.multiline
-            : TextInputType.text,
-        // 4. 높은 박스일 경우 텍스트 시작 위치를 상단으로 고정
-        textAlignVertical: isMultiLine
-            ? TextAlignVertical.top
-            : TextAlignVertical.center,
         decoration: InputDecoration(
           isDense: true,
           border: InputBorder.none,
           hintText: inputHint,
+          hintStyle: const TextStyle(color: Colors.grey, fontSize: 14),
         ),
         style: context.body,
       ),
