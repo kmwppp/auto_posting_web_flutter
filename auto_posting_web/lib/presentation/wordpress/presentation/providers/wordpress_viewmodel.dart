@@ -34,6 +34,15 @@ class WordpressViewModel extends Notifier<WordpressState> {
 
   void updateAdminId(String value) => state = state.copyWith(adminId: value);
 
+  void updateButtonUrl(String value) =>
+      state = state.copyWith(buttonPageUrl: value);
+
+  void updateButtonId(String value) =>
+      state = state.copyWith(buttonPageId: value);
+
+  void updateButtonPw(String value) =>
+      state = state.copyWith(buttonPagePw: value);
+
   void updateAdminPassword(String value) =>
       state = state.copyWith(adminPassword: value);
 
@@ -52,6 +61,10 @@ class WordpressViewModel extends Notifier<WordpressState> {
         .toList();
 
     state = state.copyWith(contents: newContents);
+  }
+
+  void changeButtonPageChange(bool value) {
+    state = state.copyWith(buttonPage: value);
   }
 
   void updateContentUrl(int index, String url) {
@@ -108,6 +121,10 @@ class WordpressViewModel extends Notifier<WordpressState> {
         adminId: response["wp_id"]?.toString() ?? "",
         adminPassword: response["wp_pw"]?.toString() ?? "",
         adSenseCode: response["adsence_code"]?.toString() ?? "",
+        buttonPage: response["button_page"] ?? false,
+        buttonPageUrl: response["button_page_url"]?.toString() ?? "",
+        buttonPageId: response["button_page_id"]?.toString() ?? "",
+        buttonPagePw: response["button_page_pw"]?.toString() ?? "",
       );
     } catch (e) {
       print(e);
@@ -134,6 +151,10 @@ class WordpressViewModel extends Notifier<WordpressState> {
         "wp_id": state.adminId,
         "wp_pw": state.adminPassword,
         "adsence_code": state.adSenseCode,
+        "button_page": state.buttonPage,
+        "button_page_url": state.buttonPageUrl,
+        "button_page_id": state.buttonPageId,
+        "button_page_pw": state.buttonPagePw,
         "isReservation": isReservation,
         "posts": state.contents
             .map((e) => {"title": e.title, "button_url": e.buttonUrl})

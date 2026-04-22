@@ -13,6 +13,11 @@ class WordpressState with _$WordpressState {
     @Default('') String adminId,
     @Default('') String adminPassword,
     @Default('') String adSenseCode,
+
+    @Default(false) bool buttonPage,
+    @Default('') String buttonPageUrl,
+    @Default('') String buttonPageId,
+    @Default('') String buttonPagePw,
     @Default([]) List<Content> contents,
     String? errorMessage,
   }) = _WordpressState;

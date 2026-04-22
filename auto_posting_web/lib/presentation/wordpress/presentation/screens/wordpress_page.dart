@@ -1,4 +1,5 @@
 import 'package:auto_posting_web/presentation/wordpress/presentation/screens/sections/wordpress_account_section.dart';
+import 'package:auto_posting_web/presentation/wordpress/presentation/screens/sections/wordpress_button_page_control_section.dart';
 import 'package:auto_posting_web/presentation/wordpress/presentation/screens/sections/wordpress_post_content_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -34,6 +35,7 @@ class WordpressPage extends ConsumerWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const WordpressAccountSection(),
+                        const WordpressButtonPageControlSection(),
                         const SizedBox(height: 32),
                         const WordpressPostContentSection(),
                         const SizedBox(height: 40),

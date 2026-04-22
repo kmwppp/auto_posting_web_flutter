@@ -24,6 +24,10 @@ mixin _$WordpressState {
   String get adminId => throw _privateConstructorUsedError;
   String get adminPassword => throw _privateConstructorUsedError;
   String get adSenseCode => throw _privateConstructorUsedError;
+  bool get buttonPage => throw _privateConstructorUsedError;
+  String get buttonPageUrl => throw _privateConstructorUsedError;
+  String get buttonPageId => throw _privateConstructorUsedError;
+  String get buttonPagePw => throw _privateConstructorUsedError;
   List<Content> get contents => throw _privateConstructorUsedError;
   String? get errorMessage => throw _privateConstructorUsedError;
 
@@ -49,6 +53,10 @@ abstract class $WordpressStateCopyWith<$Res> {
     String adminId,
     String adminPassword,
     String adSenseCode,
+    bool buttonPage,
+    String buttonPageUrl,
+    String buttonPageId,
+    String buttonPagePw,
     List<Content> contents,
     String? errorMessage,
   });
@@ -76,6 +84,10 @@ class _$WordpressStateCopyWithImpl<$Res, $Val extends WordpressState>
     Object? adminId = null,
     Object? adminPassword = null,
     Object? adSenseCode = null,
+    Object? buttonPage = null,
+    Object? buttonPageUrl = null,
+    Object? buttonPageId = null,
+    Object? buttonPagePw = null,
     Object? contents = null,
     Object? errorMessage = freezed,
   }) {
@@ -109,6 +121,22 @@ class _$WordpressStateCopyWithImpl<$Res, $Val extends WordpressState>
                 ? _value.adSenseCode
                 : adSenseCode // ignore: cast_nullable_to_non_nullable
                       as String,
+            buttonPage: null == buttonPage
+                ? _value.buttonPage
+                : buttonPage // ignore: cast_nullable_to_non_nullable
+                      as bool,
+            buttonPageUrl: null == buttonPageUrl
+                ? _value.buttonPageUrl
+                : buttonPageUrl // ignore: cast_nullable_to_non_nullable
+                      as String,
+            buttonPageId: null == buttonPageId
+                ? _value.buttonPageId
+                : buttonPageId // ignore: cast_nullable_to_non_nullable
+                      as String,
+            buttonPagePw: null == buttonPagePw
+                ? _value.buttonPagePw
+                : buttonPagePw // ignore: cast_nullable_to_non_nullable
+                      as String,
             contents: null == contents
                 ? _value.contents
                 : contents // ignore: cast_nullable_to_non_nullable
@@ -140,6 +168,10 @@ abstract class _$$WordpressStateImplCopyWith<$Res>
     String adminId,
     String adminPassword,
     String adSenseCode,
+    bool buttonPage,
+    String buttonPageUrl,
+    String buttonPageId,
+    String buttonPagePw,
     List<Content> contents,
     String? errorMessage,
   });
@@ -166,6 +198,10 @@ class __$$WordpressStateImplCopyWithImpl<$Res>
     Object? adminId = null,
     Object? adminPassword = null,
     Object? adSenseCode = null,
+    Object? buttonPage = null,
+    Object? buttonPageUrl = null,
+    Object? buttonPageId = null,
+    Object? buttonPagePw = null,
     Object? contents = null,
     Object? errorMessage = freezed,
   }) {
@@ -199,6 +235,22 @@ class __$$WordpressStateImplCopyWithImpl<$Res>
             ? _value.adSenseCode
             : adSenseCode // ignore: cast_nullable_to_non_nullable
                   as String,
+        buttonPage: null == buttonPage
+            ? _value.buttonPage
+            : buttonPage // ignore: cast_nullable_to_non_nullable
+                  as bool,
+        buttonPageUrl: null == buttonPageUrl
+            ? _value.buttonPageUrl
+            : buttonPageUrl // ignore: cast_nullable_to_non_nullable
+                  as String,
+        buttonPageId: null == buttonPageId
+            ? _value.buttonPageId
+            : buttonPageId // ignore: cast_nullable_to_non_nullable
+                  as String,
+        buttonPagePw: null == buttonPagePw
+            ? _value.buttonPagePw
+            : buttonPagePw // ignore: cast_nullable_to_non_nullable
+                  as String,
         contents: null == contents
             ? _value._contents
             : contents // ignore: cast_nullable_to_non_nullable
@@ -223,6 +275,10 @@ class _$WordpressStateImpl implements _WordpressState {
     this.adminId = '',
     this.adminPassword = '',
     this.adSenseCode = '',
+    this.buttonPage = false,
+    this.buttonPageUrl = '',
+    this.buttonPageId = '',
+    this.buttonPagePw = '',
     final List<Content> contents = const [],
     this.errorMessage,
   }) : _logs = logs,
@@ -258,6 +314,18 @@ class _$WordpressStateImpl implements _WordpressState {
   @override
   @JsonKey()
   final String adSenseCode;
+  @override
+  @JsonKey()
+  final bool buttonPage;
+  @override
+  @JsonKey()
+  final String buttonPageUrl;
+  @override
+  @JsonKey()
+  final String buttonPageId;
+  @override
+  @JsonKey()
+  final String buttonPagePw;
   final List<Content> _contents;
   @override
   @JsonKey()
@@ -272,7 +340,7 @@ class _$WordpressStateImpl implements _WordpressState {
 
   @override
   String toString() {
-    return 'WordpressState(isLoading: $isLoading, isRunning: $isRunning, logs: $logs, siteUrl: $siteUrl, adminId: $adminId, adminPassword: $adminPassword, adSenseCode: $adSenseCode, contents: $contents, errorMessage: $errorMessage)';
+    return 'WordpressState(isLoading: $isLoading, isRunning: $isRunning, logs: $logs, siteUrl: $siteUrl, adminId: $adminId, adminPassword: $adminPassword, adSenseCode: $adSenseCode, buttonPage: $buttonPage, buttonPageUrl: $buttonPageUrl, buttonPageId: $buttonPageId, buttonPagePw: $buttonPagePw, contents: $contents, errorMessage: $errorMessage)';
   }
 
   @override
@@ -291,6 +359,14 @@ class _$WordpressStateImpl implements _WordpressState {
                 other.adminPassword == adminPassword) &&
             (identical(other.adSenseCode, adSenseCode) ||
                 other.adSenseCode == adSenseCode) &&
+            (identical(other.buttonPage, buttonPage) ||
+                other.buttonPage == buttonPage) &&
+            (identical(other.buttonPageUrl, buttonPageUrl) ||
+                other.buttonPageUrl == buttonPageUrl) &&
+            (identical(other.buttonPageId, buttonPageId) ||
+                other.buttonPageId == buttonPageId) &&
+            (identical(other.buttonPagePw, buttonPagePw) ||
+                other.buttonPagePw == buttonPagePw) &&
             const DeepCollectionEquality().equals(other._contents, _contents) &&
             (identical(other.errorMessage, errorMessage) ||
                 other.errorMessage == errorMessage));
@@ -306,6 +382,10 @@ class _$WordpressStateImpl implements _WordpressState {
     adminId,
     adminPassword,
     adSenseCode,
+    buttonPage,
+    buttonPageUrl,
+    buttonPageId,
+    buttonPagePw,
     const DeepCollectionEquality().hash(_contents),
     errorMessage,
   );
@@ -331,6 +411,10 @@ abstract class _WordpressState implements WordpressState {
     final String adminId,
     final String adminPassword,
     final String adSenseCode,
+    final bool buttonPage,
+    final String buttonPageUrl,
+    final String buttonPageId,
+    final String buttonPagePw,
     final List<Content> contents,
     final String? errorMessage,
   }) = _$WordpressStateImpl;
@@ -349,6 +433,14 @@ abstract class _WordpressState implements WordpressState {
   String get adminPassword;
   @override
   String get adSenseCode;
+  @override
+  bool get buttonPage;
+  @override
+  String get buttonPageUrl;
+  @override
+  String get buttonPageId;
+  @override
+  String get buttonPagePw;
   @override
   List<Content> get contents;
   @override

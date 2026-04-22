@@ -15,6 +15,8 @@ class WordpressAccountSection extends ConsumerStatefulWidget {
 
 class _WordpressAccountSectionState
     extends ConsumerState<WordpressAccountSection> {
+  late ProviderSubscription<WordpressState> _subscription;
+
   late TextEditingController siteController;
   late TextEditingController idController;
   late TextEditingController pwController;
@@ -34,10 +36,34 @@ class _WordpressAccountSectionState
     idController = TextEditingController(text: state.adminId);
     pwController = TextEditingController(text: state.adminPassword);
     adsController = TextEditingController(text: state.adSenseCode);
+
+    /// 여기 변경
+    _subscription = ref.listenManual<WordpressState>(
+      wordpressViewModelProvider,
+      (prev, next) {
+        if (siteController.text != next.siteUrl) {
+          siteController.text = next.siteUrl;
+        }
+
+        if (idController.text != next.adminId) {
+          idController.text = next.adminId;
+        }
+
+        if (pwController.text != next.adminPassword) {
+          pwController.text = next.adminPassword;
+        }
+
+        if (adsController.text != next.adSenseCode) {
+          adsController.text = next.adSenseCode;
+        }
+      },
+    );
   }
 
   @override
   void dispose() {
+    _subscription.close();
+
     siteController.dispose();
     idController.dispose();
     pwController.dispose();
@@ -47,24 +73,7 @@ class _WordpressAccountSectionState
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(wordpressViewModelProvider);
     final vm = ref.read(wordpressViewModelProvider.notifier);
-
-    /// state 변경 감지
-    ref.listen<WordpressState>(wordpressViewModelProvider, (prev, next) {
-      if (prev?.siteUrl != next.siteUrl) {
-        siteController.text = next.siteUrl;
-      }
-      if (prev?.adminId != next.adminId) {
-        idController.text = next.adminId;
-      }
-      if (prev?.adminPassword != next.adminPassword) {
-        pwController.text = next.adminPassword;
-      }
-      if (prev?.adSenseCode != next.adSenseCode) {
-        adsController.text = next.adSenseCode;
-      }
-    });
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
